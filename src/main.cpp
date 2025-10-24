@@ -7,8 +7,8 @@ void setup() {
   Serial.begin(115200);
 
   drawFullScreen();
-  // sleep(5);
-  // clearDisplay();  
+  sleep(5);
+  clearDisplay();  
 }
 
 void loop() {
