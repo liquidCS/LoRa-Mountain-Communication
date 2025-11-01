@@ -1,8 +1,29 @@
-#include <Arduino.h>
-#include "epaper.h"
-#include <RadioLib.h>
+/*
+  RadioLib SX126x Blocking Transmit Example
 
-const int screen_update_rate = 60; // s
+  This example transmits packets using SX1262 LoRa radio module.
+  Each packet contains up to 256 bytes of data, in the form of:
+  - Arduino String
+  - null-terminated char array (C-string)
+  - arbitrary binary data (byte array)
+
+  Other modules from SX126x family can also be used.
+
+  Using blocking transmit is not recommended, as it will lead
+  to inefficient use of processor time!
+  Instead, interrupt transmit is recommended.
+
+  For default module settings, see the wiki page
+  https://github.com/jgromes/RadioLib/wiki/Default-configuration#sx126x---lora-modem
+
+  For full API reference, see the GitHub Pages
+  https://jgromes.github.io/RadioLib/
+*/
+
+// include the library
+#include <Arduino.h>
+#include <RadioLib.h>
+#include "unity.h"
 
 // SX1262 has the following connections:
 // NSS pin:   5
@@ -11,16 +32,20 @@ const int screen_update_rate = 60; // s
 // BUSY pin:  9
 SX1262 radio = new Module(5, 6, 3, 9);
 
-void setup() {
-  Serial.begin(115200);
+// or detect the pinout automatically using RadioBoards
+// https://github.com/radiolib-org/RadioBoards
+/*
+#define RADIO_BOARD_AUTO
+#include <RadioBoards.h>
+Radio radio = new RadioModule();
+*/
 
-  drawFullScreen();
-  sleep(5);
-  clearDisplay(); 
-  
+void lora_transmit_init() {
+
   // initialize SX1262 with default settings
   Serial.print(F("[SX1262] Initializing ... "));
   int state = radio.begin(915.0);
+  TEST_ASSERT_EQUAL_INT_MESSAGE(RADIOLIB_ERR_NONE, state, "LoRa Init Failed!");
   
   if (state == RADIOLIB_ERR_NONE) {
     Serial.println(F("success!"));
@@ -29,10 +54,23 @@ void setup() {
     Serial.println(state);
     return;
   }
+  
+
+  // some modules have an external RF switch
+  // controlled via two pins (RX enable, TX enable)
+  // to enable automatic control of the switch,
+  // call the following method
+  // RX enable:   4
+  // TX enable:   5
+  /*
+    radio.setRfSwitchPins(4, 5);
+  */
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+
+void test_lora_transmit_functionality() {
+  lora_transmit_init();
+
   Serial.print(F("[SX1262] Transmitting packet ... "));
 
   // you can transmit C-string or Arduino string up to
@@ -69,6 +107,5 @@ void loop() {
     Serial.println(state);
 
   }
-  // wait for a second before transmitting again
-  delay(1000);
+  TEST_ASSERT_EQUAL_INT_MESSAGE(RADIOLIB_ERR_NONE, state, "LoRa Transmit Failed!");
 }
