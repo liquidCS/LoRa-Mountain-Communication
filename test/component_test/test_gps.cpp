@@ -3,8 +3,10 @@
 #include <TinyGPS++.h>
 
 #define GPS_BAUD 9600
-#define TxP 1 
-#define RxP 38
+// #define TxP 1 
+#define TxP 4
+// #define RxP 38
+#define RxP 5
 TinyGPSPlus gps;
 // HardwareSerial gpsSerial(2);
 
@@ -61,7 +63,7 @@ void displayInfo()
 
 void test_gps_functionality() {
 
-  Serial2.begin(GPS_BAUD, SERIAL_8N1, RxP, TxP);
+  Serial2.begin(GPS_BAUD, SERIAL_8N1, RxP, TxP); // Initialize Serial2 for GPS module, RxP=38, TxP=1
 
   while(true) {
     while(Serial2.available() > 0) {

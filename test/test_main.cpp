@@ -19,9 +19,9 @@ void tearDown(void) {
 int runUnityTests(void) {
   UNITY_BEGIN();
   // RUN_TEST(test_rgbled_functionality);
-  // RUN_TEST(test_epaper_functionality);
-  //RUN_TEST(test_gps_functionality);
-  RUN_TEST(test_lora_transmit_functionality);
+  RUN_TEST(test_epaper_functionality);
+  // RUN_TEST(test_gps_functionality);
+  // RUN_TEST(test_lora_transmit_functionality);
   //RUN_TEST(test_lora_receive_functionality);
   return UNITY_END();
 }
