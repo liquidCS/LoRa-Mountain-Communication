@@ -24,13 +24,12 @@ typedef struct gps_time_t
 
 typedef struct device_info_t
 {
-    char deviceID[DEVICE_ID_MAX_LENGTH];  // Name of the device 
-    uint64_t deviceUID; // Unique ID of the device
+    char            ID[DEVICE_ID_MAX_LENGTH];  // Name of the device 
+    uint64_t        UID; // Unique ID of the device
+    gps_location_t  location; // Last known GPS location 
+    gps_time_t      time;         // Last known GPS time
 
-    gps_location_t lastKnownLocation; // Last known GPS location 
-    gps_time_t lastKnownTime;         // Last known GPS time
-    float lastKnowSignalStrength; // Last known signal strength
-
+    // float lastKnowSignalStrength; // Last known signal strength
 } device_info_t;
 
 

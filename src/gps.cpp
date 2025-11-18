@@ -3,7 +3,7 @@
 #define GPS_BAUD 9600
 #define GPS_TX 1 // PinTx for GPS module on ESP32 
 #define GPS_RX 38 // PinRx for GPS module on EPS32
-#define GPS_UPDATE_INTERVAL_MS 10000 // Update GPS data every 10 second
+#define GPS_UPDATE_INTERVAL_MS 30000 // Update GPS data every 30 second
 
 GPS gps;
 
@@ -20,19 +20,19 @@ bool GPS::GPSerialUpdate()
 
         if(gpsplus.location.isUpdated())
         {
-            myDevice.lastKnownLocation.valid = true;
-            myDevice.lastKnownLocation.latitude = gpsplus.location.lat();
-            myDevice.lastKnownLocation.longitude = gpsplus.location.lng();
-            DEBUG_PRINTLN(F("Update location"));
+            myDevice.location.valid = true;
+            myDevice.location.latitude = gpsplus.location.lat();
+            myDevice.location.longitude = gpsplus.location.lng();
+            DEBUG_PRINTF("Update location: Lat: %.6f, Lon: %.6f\n", myDevice.location.latitude, myDevice.location.longitude);
         }
 
         if(gpsplus.time.isUpdated())
         {
-            myDevice.lastKnownTime.valid = true;
-            myDevice.lastKnownTime.hour = gpsplus.time.hour();
-            myDevice.lastKnownTime.minute = gpsplus.time.minute();
-            myDevice.lastKnownTime.second = gpsplus.time.second(); 
-            DEBUG_PRINTF("Update Time: %02d:%02d\n", myDevice.lastKnownTime.hour, myDevice.lastKnownTime.minute);
+            myDevice.time.valid = true;
+            myDevice.time.hour = gpsplus.time.hour();
+            myDevice.time.minute = gpsplus.time.minute();
+            myDevice.time.second = gpsplus.time.second(); 
+            DEBUG_PRINTF("Update Time: %02d:%02d\n", myDevice.time.hour, myDevice.time.minute);
             return false;
         }
 
@@ -63,7 +63,7 @@ void TaskGPSUpdate()
     xTaskCreate(
         UpdateGPSLoop,
         "GPSUpdateTask",
-        2048,
+        4096,
         &gps,
         1,
         NULL

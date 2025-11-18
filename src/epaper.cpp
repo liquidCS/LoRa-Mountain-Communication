@@ -57,22 +57,22 @@ void Epaper::_drawTopBar() {
     display.drawFastHLine(0, topbar_height, display.width(), GxEPD_BLACK);
     display.drawFastHLine(0, topbar_height - 2, display.width(), GxEPD_BLACK);
 
-    if(myDevice.lastKnownTime.valid)
+    if(myDevice.time.valid)
     {
         _setTopBarTimeStyle();
         char text[10];
-        snprintf(text, sizeof(text), "%02d:%02d", myDevice.lastKnownTime.hour, myDevice.lastKnownTime.minute);
+        snprintf(text, sizeof(text), "%02d:%02d", myDevice.time.hour, myDevice.time.minute);
         display.setCursor(0, FREEMONO_FONT_HEIGHT);
         display.print(text);
     }
 
-    if (myDevice.lastKnownLocation.valid) 
+    if (myDevice.location.valid) 
     {
         _setTopBarGPSStyle();
         char char_lon[15];
         char char_lat[15];
-        dtostrf(myDevice.lastKnownLocation.latitude, 10, 6, char_lat);
-        dtostrf(myDevice.lastKnownLocation.longitude, 10, 6, char_lon);
+        dtostrf(myDevice.location.latitude, 10, 6, char_lat);
+        dtostrf(myDevice.location.longitude, 10, 6, char_lon);
 
         int16_t x, y;
         uint16_t w, h;
