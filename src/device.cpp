@@ -1,6 +1,6 @@
 #include "device.h"
 
-device_info_t myDevice;
+Device myDevice;
 
 
 Device::Device() 

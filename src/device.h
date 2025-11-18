@@ -22,27 +22,23 @@ typedef struct gps_time_t
     uint8_t second;
 } gps_time_t;
 
-typedef struct device_info_t
-{
-    char            ID[DEVICE_ID_MAX_LENGTH];  // Name of the device 
-    uint64_t        UID; // Unique ID of the device
-    gps_location_t  location; // Last known GPS location 
-    gps_time_t      time;         // Last known GPS time
-
-    // float lastKnowSignalStrength; // Last known signal strength
-} device_info_t;
-
-
 
 class Device
 {
+private:
+    uint64_t       UID; // Unique ID of the device
+
 public:
-    device_info_t info; // Device information
+    char            ID[DEVICE_ID_MAX_LENGTH];  // Name of the device 
+    gps_location_t  location; // Last known GPS location 
+    gps_time_t      time;         // Last known GPS time
 
     Device(); // Constructor
+
+    uint64_t GetUID() { return UID; } 
 };
 
 
-extern device_info_t myDevice; // Info of this device 
+extern Device myDevice; // Info of this device 
 
 #endif
