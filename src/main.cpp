@@ -1,74 +1,29 @@
 #include <Arduino.h>
-#include "epaper.h"
 #include <RadioLib.h>
+#include <FreeRTOS.h>
+#include <task.h>
 
-const int screen_update_rate = 60; // s
+#include "config.h"
+#include "epaper.h"
+#include "gps.h"
 
-// SX1262 has the following connections:
-// NSS pin:   5
-// DIO1 pin:  6
-// NRST pin:  3
-// BUSY pin:  9
-SX1262 radio = new Module(5, 6, 3, 9);
+
 
 void setup() {
+  // Debug serial 
+  #ifdef DEBUG
   Serial.begin(115200);
+  #endif
 
-  drawFullScreen();
-  sleep(5);
-  clearDisplay(); 
+  // Start GPS
+  TaskGPSUpdate();
+
+  // Create Screen Task
+  epaper.TaskScreenUpdate();
   
-  // initialize SX1262 with default settings
-  Serial.print(F("[SX1262] Initializing ... "));
-  int state = radio.begin(915.0);
   
-  if (state == RADIOLIB_ERR_NONE) {
-    Serial.println(F("success!"));
-  } else {
-    Serial.print(F("failed, code "));
-    Serial.println(state);
-    return;
-  }
 }
 
+
 void loop() {
-  // put your main code here, to run repeatedly:
-  Serial.print(F("[SX1262] Transmitting packet ... "));
-
-  // you can transmit C-string or Arduino string up to
-  // 256 characters long
-  String str = "Hello World! #";
-  int state = radio.transmit(str);
-
-  // you can also transmit byte array up to 256 bytes long
-  /*
-    byte byteArr[] = {0x01, 0x23, 0x45, 0x56, 0x78, 0xAB, 0xCD, 0xEF};
-    int state = radio.transmit(byteArr, 8);
-  */
-
-  if (state == RADIOLIB_ERR_NONE) {
-    // the packet was successfully transmitted
-    Serial.println(F("success!"));
-
-    // print measured data rate
-    Serial.print(F("[SX1262] Datarate:\t"));
-    Serial.print(radio.getDataRate());
-    Serial.println(F(" bps"));
-
-  } else if (state == RADIOLIB_ERR_PACKET_TOO_LONG) {
-    // the supplied packet was longer than 256 bytes
-    Serial.println(F("too long!"));
-
-  } else if (state == RADIOLIB_ERR_TX_TIMEOUT) {
-    // timeout occured while transmitting packet
-    Serial.println(F("timeout!"));
-
-  } else {
-    // some other error occurred
-    Serial.print(F("failed, code "));
-    Serial.println(state);
-
-  }
-  // wait for a second before transmitting again
-  delay(1000);
 }

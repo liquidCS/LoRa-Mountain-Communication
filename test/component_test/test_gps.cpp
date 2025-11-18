@@ -3,10 +3,8 @@
 #include <TinyGPS++.h>
 
 #define GPS_BAUD 9600
-// #define TxP 1 
-#define TxP 4
-// #define RxP 38
-#define RxP 5
+#define TxP 1 
+#define RxP 38
 TinyGPSPlus gps;
 // HardwareSerial gpsSerial(2);
 
