@@ -3,6 +3,7 @@
 #define GPS_BAUD 9600
 #define GPS_TX 1 // PinTx for GPS module on ESP32 
 #define GPS_RX 38 // PinRx for GPS module on EPS32
+#define GPS_UPDATE_INTERVAL_MS 10000 // Update GPS data every 10 second
 
 GPS gps;
 
@@ -11,7 +12,7 @@ GPS::GPS()
     Serial2.begin(GPS_BAUD, SERIAL_8N1, GPS_RX, GPS_TX);
 }
 
-void GPS::ReadFromGPS()
+bool GPS::GPSerialUpdate()
 {
     if(Serial2.available() > 0)
     {
@@ -19,41 +20,50 @@ void GPS::ReadFromGPS()
 
         if(gpsplus.location.isUpdated())
         {
-            validLocation = true;
-            location.latitude = gpsplus.location.lat();
-            location.longitude = gpsplus.location.lng();
-            Serial.println(F("Update location"));
+            myDevice.lastKnownLocation.valid = true;
+            myDevice.lastKnownLocation.latitude = gpsplus.location.lat();
+            myDevice.lastKnownLocation.longitude = gpsplus.location.lng();
+            DEBUG_PRINTLN(F("Update location"));
         }
 
         if(gpsplus.time.isUpdated())
         {
-            validTime = true;
-            time.hour = gpsplus.time.hour();
-            time.minute = gpsplus.time.minute();
-            time.second = gpsplus.time.second(); 
-            Serial.print(F("Update time"));
-            Serial.printf("Time: %02d:%02d:%02d\n", time.hour, time.minute, time.second);
+            myDevice.lastKnownTime.valid = true;
+            myDevice.lastKnownTime.hour = gpsplus.time.hour();
+            myDevice.lastKnownTime.minute = gpsplus.time.minute();
+            myDevice.lastKnownTime.second = gpsplus.time.second(); 
+            DEBUG_PRINTF("Update Time: %02d:%02d\n", myDevice.lastKnownTime.hour, myDevice.lastKnownTime.minute);
+            return false;
         }
+
+        return true;
     }
+    #ifdef DEBUG
+    else {
+        DEBUG_PRINTLN(F("Serial2 for GPS not available"));
+        return false;
+    }
+    #endif
 }
 
 void UpdateGPSLoop(void *parameter)
 {
     GPS *gps = (GPS *)parameter;
-    while(true)
+    for(;;) 
     {
-        gps->ReadFromGPS();
-        vTaskDelay(10 / portTICK_PERIOD_MS); // Delay for 1 second
+        while(gps->GPSerialUpdate()) {
+            vTaskDelay(pdMS_TO_TICKS(10)); // Small delay to avoid busy loop
+        }
+        vTaskDelay(pdMS_TO_TICKS(GPS_UPDATE_INTERVAL_MS)); // Update config MS 
     }
 }
-
 
 void TaskGPSUpdate()
 {
     xTaskCreate(
         UpdateGPSLoop,
         "GPSUpdateTask",
-        4096,
+        2048,
         &gps,
         1,
         NULL

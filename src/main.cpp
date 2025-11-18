@@ -3,19 +3,23 @@
 #include <FreeRTOS.h>
 #include <task.h>
 
+#include "config.h"
 #include "epaper.h"
 #include "gps.h"
 
 
+
 void setup() {
   // Debug serial 
+  #ifdef DEBUG
   Serial.begin(115200);
+  #endif
 
   // Start GPS
   TaskGPSUpdate();
 
   // Create Screen Task
-  TaskDrawScreenJob();
+  epaper.TaskScreenUpdate();
   
   
 }
