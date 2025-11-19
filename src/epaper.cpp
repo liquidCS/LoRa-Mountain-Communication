@@ -16,7 +16,7 @@ void Epaper::_screenRefreshLoopTask(void *parameter) {
 void Epaper::_screenRefreshLoop() {
     for (;;) {
         drawFullScreen();
-        Serial.println("Update screen.");
+        DEBUG_PRINT(F("Update screen"));
         vTaskDelay(screen_update_delay / portTICK_PERIOD_MS);
     }
 }

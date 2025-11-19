@@ -1,10 +1,5 @@
 #include "gps.h"
 
-#define GPS_BAUD 9600
-#define GPS_TX 1 // PinTx for GPS module on ESP32 
-#define GPS_RX 38 // PinRx for GPS module on EPS32
-#define GPS_UPDATE_INTERVAL_MS 30000 // Update GPS data every 30 second
-
 GPS gps;
 
 GPS::GPS() 
@@ -38,12 +33,10 @@ bool GPS::GPSerialUpdate()
 
         return true;
     }
-    #ifdef DEBUG
     else {
         DEBUG_PRINTLN(F("Serial2 for GPS not available"));
         return false;
     }
-    #endif
 }
 
 void UpdateGPSLoop(void *parameter)
