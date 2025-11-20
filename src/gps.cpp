@@ -13,12 +13,22 @@ bool GPS::GPSerialUpdate()
     {
         gpsplus.encode(Serial2.read());
 
+        // Sometimes location and time are updated separately 
+        // If signal is weak, only time may be updated 
+
         if(gpsplus.location.isUpdated())
         {
             myDevice.location.valid = true;
-            myDevice.location.latitude = gpsplus.location.lat();
+            myDevice.location.latitude = gpsplus.location.lat(); // Update location
             myDevice.location.longitude = gpsplus.location.lng();
-            DEBUG_PRINTF("Update location: Lat: %.6f, Lon: %.6f\n", myDevice.location.latitude, myDevice.location.longitude);
+            myDevice.location.attitude = gpsplus.altitude.meters();
+
+            myDevice.location.updateTime.valid = true; // Update time of last location update
+            myDevice.location.updateTime.hour = gpsplus.time.hour();
+            myDevice.location.updateTime.minute = gpsplus.time.minute();
+            myDevice.location.updateTime.second = gpsplus.time.second();
+
+            DEBUG_PRINTF("Update location: Lat: %.6f, Lon: %.6f Att: %.2f\n", myDevice.location.latitude, myDevice.location.longitude, myDevice.location.attitude);
         }
 
         if(gpsplus.time.isUpdated())
@@ -44,9 +54,7 @@ void UpdateGPSLoop(void *parameter)
     GPS *gps = (GPS *)parameter;
     for(;;) 
     {
-        while(gps->GPSerialUpdate()) {
-            vTaskDelay(pdMS_TO_TICKS(10)); // Small delay to avoid busy loop
-        }
+        while(gps->GPSerialUpdate()) {}
         vTaskDelay(pdMS_TO_TICKS(GPS_UPDATE_INTERVAL_MS)); // Update config MS 
     }
 }
@@ -56,7 +64,8 @@ void TaskGPSUpdate()
     xTaskCreate(
         UpdateGPSLoop,
         "GPSUpdateTask",
-        4096,
+        // 4096,
+        8192,
         &gps,
         1,
         NULL

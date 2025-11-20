@@ -7,7 +7,7 @@
 #define GPS_BAUD 9600
 #define GPS_TX 1 // PinTx for GPS module on ESP32 
 #define GPS_RX 38 // PinRx for GPS module on EPS32
-#define GPS_UPDATE_INTERVAL_MS 30000 // Update GPS data every 30 second
+#define GPS_UPDATE_INTERVAL_MS 10000 // Update GPS data every x ms 
 
 
 #if DEBUG
