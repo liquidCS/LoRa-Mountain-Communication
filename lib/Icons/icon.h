@@ -1,5 +1,15 @@
-// Consolidated icon header file
+#ifndef ICON_H  // [防止重複引用] 開頭
+#define ICON_H
 
+#include <Arduino.h>
+// 這裡需要引用 GxEPD2 的標頭檔，因為下面的函式宣告會用到它的型別
+#include <GxEPD2_3C.h> 
+
+// ====================
+// 1. 圖片數據 (Data)
+// ====================
+
+// 為了避免多個檔案引用時發生 "multiple definition" 錯誤，在陣列前加上 static
 const unsigned char gImage_satellite_icon[60] = { /* 0X00,0X01,0X14,0X00,0X14,0X00, */
 0X00,0X00,0X00,0X30,0X00,0X00,0X78,0X00,0X00,0X7C,0X00,0X00,0X3E,0X00,0X00,0X1F,
 0X00,0X00,0X0F,0X80,0X00,0X07,0XA0,0X00,0X03,0X70,0X00,0X00,0XF8,0X00,0X03,0XF0,
@@ -339,3 +349,48 @@ const unsigned char gImage_mountain[5000] = { /* 0X10,0X01,0X00,0XC8,0X00,0XC8, 
 0X00,0X00,0X00,0X00,0X00,0X00,0X3E,0X00,0X00,0X00,0X00,0X00,0X01,0XE0,0X00,0X00,
 0X7C,0X3C,0X7F,0X80,0X00,0X00,0X0F,0XDE,};
 
+// ====================
+// 2. 函式型別和列舉 (TypeDef and Enum)
+// ====================
+
+// 定義螢幕型別 (參照你的主程式)
+typedef GxEPD2_3C<GxEPD2_154_Z90c, GxEPD2_154_Z90c::HEIGHT> MyDisplay;
+
+// 定義所有 Icon 的名稱 (使用 enum class 讓名稱更安全)
+enum class IconType {
+    // 背景
+    MOUNTAIN_BACKGROUND, 
+    // 簡單的單色 Icon
+    SATELLITE_SIGNAL_GOOD,
+    GPS_LOCATION_GOOD,
+    GPS_LOCATION_BAD, // 即 no_location
+    // 複合的雙色 Icon
+    SATELLITE_SIGNAL_BAD // 即 satellite + ban
+};
+
+// ====================
+// 3. 函式宣告 (Declaration)
+// ====================
+
+// 宣告統一的 Icon 繪圖函式
+// 參數：IconType 來識別要畫什麼，x/y 來決定位置
+void drawIcon(MyDisplay &display, IconType type, int x, int y);
+
+// // draw mountain background
+// void drawMountainBackground(MyDisplay &display);
+
+// // 宣告一個畫 "無衛星訊號" 圖示的函式
+// // 我們需要把 display 物件傳進去 (使用 reference &)
+// void drawNoSatelliteIcon(MyDisplay &display, int x, int y);
+
+// // draw good satellite signal icon
+// void drawSatelliteIcon(MyDisplay &display, int x, int y);
+
+// // draw gps location icon
+// void drawGpsIcon(MyDisplay &display, int x, int y);
+
+// // draw no gps icon, no location
+// void drawNoGpsIcon(MyDisplay &display, int x, int y);
+
+
+#endif // [防止重複引用] 結尾

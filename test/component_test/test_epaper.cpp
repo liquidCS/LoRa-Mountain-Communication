@@ -1,14 +1,10 @@
 #include <Arduino.h>
 #include <GxEPD2_3C.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
-#include "mountain.h" //載入圖片的 C array
-#include "gps_icon.h" //載入gps_icon的 C array
-#include "no_location.h" //載入no gps 訊號的 C array
-#include "satellite_icon.h" //載入衛星圖示的 C array
-#include "ban_icon.h" //載入禁止圖示的 C array
+#include "test_display.h"
 
 // Display Selection 3-color 200x200
-GxEPD2_3C<GxEPD2_154_Z90c, GxEPD2_154_Z90c::HEIGHT> display(GxEPD2_154_Z90c(/*CS=10*/ 10, /*DC=*/ 17, /*RST=*/ 16, /*BUSY=*/ 4)); // GDEH0154Z90 200x200, SSD1681
+// GxEPD2_3C<GxEPD2_154_Z90c, GxEPD2_154_Z90c::HEIGHT> display(GxEPD2_154_Z90c(/*CS=10*/ 10, /*DC=*/ 17, /*RST=*/ 16, /*BUSY=*/ 4)); // GDEH0154Z90 200x200, SSD1681
 
 // Functions
 void ePaperInit();
@@ -23,51 +19,19 @@ void test_epaper_functionality() {
 
   // Back Ground
   display.fillScreen(GxEPD_WHITE);
-  
-  display.drawBitmap(
-    0, 0,            // 顯示在左上角 (X=0, Y=0)
-    gImage_mountain,   // 圖片陣列名稱
-    200, 200,        // 圖片的寬度和高度
-    GxEPD_BLACK      // 用黑色繪製
-  );
+  // Draw Circles
+  display.fillCircle(0, 0, 100, GxEPD_BLACK);
+  display.fillCircle(200, 0, 100, GxEPD_RED);
+  display.fillCircle(0, 200, 100, GxEPD_RED);
+  display.fillCircle(200, 200, 100, GxEPD_BLACK);
+  // Print Texts
+  ePaperPrintText("This is red.", 0, GxEPD_RED, GxEPD_WHITE);
+  ePaperPrintText("This is black.", 1, GxEPD_BLACK, GxEPD_WHITE);
+  ePaperPrintText("This is white.", 2, GxEPD_WHITE, GxEPD_BLACK);
+  ePaperPrintText("This is red.", 3, GxEPD_RED, GxEPD_BLACK);
+  ePaperPrintText("This is black.", 4, GxEPD_BLACK, GxEPD_RED);
+  ePaperPrintText("This is white.", 5, GxEPD_WHITE, GxEPD_RED);
 
-  // Draw Satellite Icon
-  // display.drawBitmap(
-  //   0, 0,            // 顯示在 (X=0, Y=0)
-  //   gImage_satellite_icon,   // 圖片陣列名稱
-  //   20, 20,        // 圖片的寬度和高度
-  //   GxEPD_BLACK      // 用黑色繪製
-  // );
-
-  // Draw No satellite Icon
-  display.drawBitmap(
-    0, 0,            // 顯示在 (X=0, Y=0)
-    gImage_satellite_icon,   // 圖片陣列名稱
-    20, 20,        // 圖片的寬度和高度
-    GxEPD_BLACK      // 用黑色繪製
-  );
-  display.drawBitmap(
-    0, 0,            // 顯示在 (X=0, Y=0)
-    gImage_ban_icon,   // 圖片陣列名稱
-    20, 20,        // 圖片的寬度和高度
-    GxEPD_RED      // 用紅色繪製
-  );
-
-  // Draw GPS Icon
-  // display.drawBitmap(
-  //   0, 0,            // 顯示在 (X=0, Y=0)
-  //   gImage_gps_icon,   // 圖片陣列名稱
-  //   20, 20,        // 圖片的寬度和高度
-  //   GxEPD_RED      // 用紅色繪製
-  // );
-
-  // Draw No Location Icon
-  // display.drawBitmap(
-  //   0, 0,            // 顯示在 (X=0, Y=0)
-  //   gImage_no_location,   // 圖片陣列名稱
-  //   20, 20,        // 圖片的寬度和高度
-  //   GxEPD_RED      // 用紅色繪製
-  // );
 
   // Refresh screen
   display.display();
