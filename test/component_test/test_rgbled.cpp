@@ -18,7 +18,7 @@ void test_rgbled_functionality() {
     pixel.show();
   
     hue += 256; // Smooth step (smaller = slower transition)
-    delay(10);  // Adjust speed of transition
+    delay(50);  // Adjust speed of transition
   }
 }
 
