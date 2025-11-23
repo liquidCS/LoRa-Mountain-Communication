@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache PlatformIO and pip packages
-      - uses: actions/cache@v4
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/pip
