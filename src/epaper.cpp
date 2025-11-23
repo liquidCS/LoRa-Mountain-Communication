@@ -6,7 +6,13 @@ Epaper::Epaper()
     : display(GxEPD2_154_Z90c(/*CS=*/10, /*DC=*/17, /*RST=*/16, /*BUSY=*/4)) {}
 
 void Epaper::TaskScreenUpdate() {
-    xTaskCreate(_screenRefreshLoopTask, "DisplayUpdateTask", 10000, this, 1, NULL);
+    xTaskCreate(
+        _screenRefreshLoopTask, 
+        "DisplayUpdateTask", 
+        10000, 
+        this, 
+        1, 
+        NULL);
 }
 
 void Epaper::_screenRefreshLoopTask(void *parameter) {

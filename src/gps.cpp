@@ -64,7 +64,6 @@ void TaskGPSUpdate()
     xTaskCreate(
         UpdateGPSLoop,
         "GPSUpdateTask",
-        // 4096,
         8192,
         &gps,
         1,
