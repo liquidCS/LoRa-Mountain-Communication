@@ -3,8 +3,8 @@
 
 #include <TinyGPS++.h>
 #include <Arduino.h>
-#include "config.h"
-#include "device.h"
+#include "config.hpp"
+#include "device.hpp"
 
 #define GPS_BAUD 9600 // Baud rate for GPS module
 #define GPS_TX 1 // PinTx for GPS module on ESP32 

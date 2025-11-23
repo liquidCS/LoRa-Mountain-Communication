@@ -1,4 +1,4 @@
-#include "gps.h"
+#include "gps.hpp"
 
 GPS gps;
 

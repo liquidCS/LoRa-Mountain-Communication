@@ -2,7 +2,7 @@
 #define DEVICE_H
 
 #include <Arduino.h>
-#include "config.h"
+#include "config.hpp"
 
 #define DEVICE_ID_MAX_LENGTH 16
 

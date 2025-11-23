@@ -3,9 +3,9 @@
 #include <FreeRTOS.h>
 #include <task.h>
 
-#include "config.h"
-#include "epaper.h"
-#include "gps.h"
+#include "config.hpp"
+#include "epaper.hpp"
+#include "gps.hpp"
 
 
 

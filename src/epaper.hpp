@@ -5,9 +5,9 @@
 #include <GxEPD2_3C.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 #include <Fonts/Org_01.h>
-#include <gps.h>
 
-#include "device.h"
+#include "gps.hpp"
+#include "device.hpp"
 
 class Epaper {
 public:
