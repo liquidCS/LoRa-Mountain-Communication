@@ -2,7 +2,7 @@
 #define LORA_HPP
 
 #include <Arduino.h>
-#include "LoraMesher.h"
+#include <LoraMesher.h>
 #include "device.hpp"
 
 // 硬體腳位定義
