@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "LoraMesher.h"
-#include "Device.hpp"
+#include "device.hpp"
 
 // 硬體腳位定義
 #define LORA_CS   5

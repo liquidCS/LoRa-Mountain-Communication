@@ -153,7 +153,7 @@ void TaskLoRaSender(void *pvParameters) {
                 nextInterval = base + idOffset + jitter;
             }
         }
-        myLat += 0.0001;
+        //myLat += 0.0001;  //測試用, 模擬移動
         vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
