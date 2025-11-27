@@ -1,11 +1,12 @@
 #include <Arduino.h>
-#include <RadioLib.h>
+#include <LoraMesher.h>
 #include <FreeRTOS.h>
 #include <task.h>
 
 #include "config.hpp"
 #include "epaper.hpp"
 #include "gps.hpp"
+#include "lora.hpp"
 
 
 
@@ -17,6 +18,9 @@ void setup() {
 
   // Start GPS
   TaskGPSUpdate();
+
+  // Start Lora
+  TaskLoraStart();
 
   // Create Screen Task
   epaper.TaskScreenUpdate();
