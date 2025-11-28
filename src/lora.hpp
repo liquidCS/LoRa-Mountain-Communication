@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <LoraMesher.h>
 #include "device.hpp"
+#include "gps.hpp"
 
 // 硬體腳位定義
 #define LORA_CS   5

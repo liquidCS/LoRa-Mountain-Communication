@@ -3,8 +3,6 @@
 
 LoraMesher& radio = LoraMesher::getInstance();
 
-float myLat = 23.4698;
-float myLon = 120.9573;
 uint8_t myBat = 100;
 bool mySOS = false;
 
@@ -25,7 +23,7 @@ void TaskLoraStart(){
     );
 }
 void initLoRaMesh() {
-    Serial.println("[LoRa] Initializing...");
+    DEBUG_PRINTLN("[LoRa] Initializing...");
     //gpio_install_isr_service(0);
     LoraMesher::LoraMesherConfig config; 
 
@@ -64,13 +62,13 @@ void initLoRaMesh() {
         // 告訴LoRaMesher收到信請通知這個任務
         radio.setReceiveAppDataTaskHandle(receiveTaskHandle);
     } else {
-        Serial.println("[Error] Failed to create Receive Task");
+        DEBUG_PRINTLN("[Error] Failed to create Receive Task");
     }
 
     // 開始運作
     radio.start();
 
-    Serial.printf("[LoRa] Started! Device ID: 0x%X\n", radio.getLocalAddress());
+    DEBUG_PRINTF("[LoRa] Started! Device ID: 0x%X\n", radio.getLocalAddress());
 }
 
 // 接收任務
@@ -90,7 +88,7 @@ void processReceivedPackets(void*) {
                 // 解析數據
                 NodeData* receivedData = (NodeData*)packet->payload;
                 if (receivedData->appId != MOUNTAIN_APP_ID) {
-                    Serial.printf("[RX] Ignored packet from 0x%X (Wrong AppID: 0x%X)\n", 
+                    DEBUG_PRINTF("[RX] Ignored packet from 0x%X (Wrong AppID: 0x%X)\n", 
                                     packet->src, receivedData->appId);
                     
                     // 這是別人的封包或是雜訊，直接刪除，不處理
@@ -98,10 +96,12 @@ void processReceivedPackets(void*) {
                     continue; // 跳過這次迴圈，處理下一個封包
                 }
                 updateRemoteNode(*receivedData);
-                Serial.printf("\n[RX] From ID: 0x%X\n", packet->src);
-                Serial.printf("     GPS: %.6f, %.6f | Bat: %d%% | SOS: %d\n", 
+                DEBUG_PRINTF("     From UID: 0x%X |  GPS: %.6f, %.6f | Bat: %d%% | SOS: %d | Dis: %.2f m \n", 
+                              receivedData->nodeId,
                               receivedData->lat, receivedData->lon, 
-                              receivedData->battery, receivedData->isSOS);
+                              receivedData->battery, receivedData->isSOS,
+                              TinyGPSPlus::distanceBetween(myDevice.location.latitude, myDevice.location.longitude, receivedData->lat, receivedData->lon)
+                            );
 
                 // 刪除封包
                 radio.deletePacket(packet);
@@ -112,48 +112,44 @@ void processReceivedPackets(void*) {
 
 // 發送任務
 void TaskLoRaSender(void *pvParameters) {
-    uint32_t lastSendTime = 0;
-    uint32_t nextInterval = 10000; 
+    uint32_t nextInterval;
 
-    for (;;) {
-        if (millis() - lastSendTime > nextInterval) {
-            
-            NodeData payload;
-            uint64_t fullUID = myDevice.GetUID();
-            payload.appId = MOUNTAIN_APP_ID;
-            payload.nodeId = (uint16_t)(fullUID & 0xFFFF);
-            if (myDevice.location.valid) { 
-                payload.lat = myDevice.location.latitude;
-                payload.lon = myDevice.location.longitude;
-            } else {
-                payload.lat = 0.0;
-                payload.lon = 0.0;
-            }
-            payload.battery = myBat;
-            payload.isSOS = mySOS;
-
-            Serial.print("[TX] Sending Packet... ");
-            
-            // 參數解釋：目標, 資料指標, 資料"數量"(不是Bytes)
-            // 因為用了 <NodeData> 模板，最後一個參數填 1 (代表 1 個 NodeData)
-            radio.createPacketAndSend<NodeData>(BROADCAST_ADDR, &payload, 1);
-            
-            
-            Serial.println("Sent!");
-
-            lastSendTime = millis();
-
-            // 隨機間隔邏輯
-            if (payload.isSOS) {
-                nextInterval = random(5000, 8000);
-            } else {
-                uint32_t base = 52000;
-                uint32_t idOffset = (payload.nodeId & 0x0F) * 1000; 
-                int32_t jitter = random(-10000, 10001);
-                nextInterval = base + idOffset + jitter;
-            }
+    for (;;) 
+    {
+        NodeData payload;
+        uint64_t fullUID = myDevice.GetUID();
+        payload.appId = MOUNTAIN_APP_ID;
+        payload.nodeId = (uint16_t)(fullUID & 0xFFFF);
+        if (myDevice.location.valid) { 
+            payload.lat = myDevice.location.latitude;
+            payload.lon = myDevice.location.longitude;
+        } else {
+            payload.lat = 0.0;
+            payload.lon = 0.0;
         }
+        payload.battery = myBat;
+        payload.isSOS = mySOS;
+
+        DEBUG_PRINT("[TX] Sending Packet... ");
+        
+        // 參數解釋：目標, 資料指標, 資料"數量"(不是Bytes)
+        // 因為用了 <NodeData> 模板，最後一個參數填 1 (代表 1 個 NodeData)
+        radio.createPacketAndSend<NodeData>(BROADCAST_ADDR, &payload, 1);
+        
+        
+        DEBUG_PRINTLN("Sent!");
+
+        // 隨機間隔邏輯
+        if (payload.isSOS) {
+            nextInterval = random(5000, 8000);
+        } else {
+            uint32_t base = LORA_RANDOM_INTERVAL_BASE_MS;
+            uint32_t idOffset = (payload.nodeId & 0x0F) * 1000; 
+            int32_t jitter = random(-LORA_RANDOM_INTERVAL_JITTER_MS, LORA_RANDOM_INTERVAL_JITTER_MS);
+            nextInterval = base + idOffset + jitter;
+        }
+
         //myLat += 0.0001;  //測試用, 模擬移動
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(nextInterval / portTICK_PERIOD_MS);
     }
 }

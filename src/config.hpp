@@ -9,6 +9,15 @@
 #define GPS_RX 38 // PinRx for GPS module on EPS32
 #define GPS_UPDATE_INTERVAL_MS 10000 // Update GPS data every x ms 
 
+// === LoRa Configuration ===
+#ifndef DEBUG
+#define LORA_RANDOM_INTERVAL_BASE_MS 52000 // Base interval for LoRa sending
+#define LORA_RANDOM_INTERVAL_JITTER_MS 10000 // Jitter for LoRa sending interval *2
+#else
+#define LORA_RANDOM_INTERVAL_BASE_MS 5000 // Base interval for LoRa sending
+#define LORA_RANDOM_INTERVAL_JITTER_MS 1000 // Jitter for LoRa sending interval
+#endif
+
 
 #if DEBUG
     #define DEBUG_PRINT(x) Serial.print(x)
