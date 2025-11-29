@@ -137,6 +137,10 @@ void TaskLoRaSender(void *pvParameters) {
 
         DEBUG_PRINT("[TX] Sending Packet... ");
         
+        #if ENABLE_SLEEP
+        radio.restartRadio();
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        #endif
         // 參數解釋：目標, 資料指標, 資料"數量"(不是Bytes)
         // 因為用了 <NodeData> 模板，最後一個參數填 1 (代表 1 個 NodeData)
         radio.createPacketAndSend<NodeData>(BROADCAST_ADDR, &payload, 1);
