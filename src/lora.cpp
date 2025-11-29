@@ -140,6 +140,7 @@ void TaskLoRaSender(void *pvParameters) {
         #if ENABLE_SLEEP
         radio.restartRadio();
         vTaskDelay(1000 / portTICK_PERIOD_MS);
+        radio.start();
         #endif
         // 參數解釋：目標, 資料指標, 資料"數量"(不是Bytes)
         // 因為用了 <NodeData> 模板，最後一個參數填 1 (代表 1 個 NodeData)
@@ -174,7 +175,7 @@ void TaskLoRaSender(void *pvParameters) {
                 else remainingTime -= passed;
                 continue; 
             }
-            DEBUG_PRINTLN("[LoRa] Got Lock! (Holding...)");
+            //DEBUG_PRINTLN("[LoRa] Got Lock! (Holding...)");
             vTaskDelay(100 / portTICK_PERIOD_MS);
 
             uint32_t passedBuffer = millis() - startWaitTime;
@@ -186,7 +187,7 @@ void TaskLoRaSender(void *pvParameters) {
 
             // 設定剩餘時間
             if(remainingTime <= 0){
-                DEBUG_PRINTLN("[LoRa] Giving Lock back...");
+                //DEBUG_PRINTLN("[LoRa] Giving Lock back...");
                 xSemaphoreGive(sleepLock);
                 break;
             }
@@ -206,7 +207,7 @@ void TaskLoRaSender(void *pvParameters) {
             */
             // 開始淺眠
             DEBUG_PRINT("Going to Light Sleep...");
-            DEBUG_PRINTF("remainingTime:%d", remainingTime);
+            //DEBUG_PRINTF("remainingTime:%d", remainingTime);
             DEBUG_FLUSH();  //確保 Log 印完再睡
             esp_light_sleep_start();
 
