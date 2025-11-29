@@ -3,17 +3,14 @@
 
 #include <Arduino.h>
 #include <LoraMesher.h>
+#include "config.hpp"
 #include "device.hpp"
 #include "gps.hpp"
 
-// 硬體腳位定義
-#define LORA_CS   5
-#define LORA_DIO1 6
-#define LORA_RST  3
-#define LORA_BUSY 9
-#define LORA_SCK  12
-#define LORA_MISO 13
-#define LORA_MOSI 11
+#if ENABLE_SLEEP
+extern SemaphoreHandle_t sleepLock;
+#endif
+
 
 // 封包結構定義
 struct __attribute__((packed)) NodeData {

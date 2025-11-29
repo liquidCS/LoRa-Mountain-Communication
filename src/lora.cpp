@@ -11,6 +11,9 @@ TaskHandle_t receiveTaskHandle = NULL;
 
 // 初始化函式
 void TaskLoraStart(){
+    gpio_wakeup_enable((gpio_num_t)LORA_DIO1, GPIO_INTR_HIGH_LEVEL);    //設定 DIO1 為喚醒源
+    esp_sleep_enable_gpio_wakeup();
+
     initLoRaMesh();
     initNodeManager();
     xTaskCreate(
@@ -110,9 +113,11 @@ void processReceivedPackets(void*) {
     }
 }
 
+
 // 發送任務
 void TaskLoRaSender(void *pvParameters) {
-    uint32_t nextInterval;
+    int32_t nextInterval;
+    int32_t remainingTime;
 
     for (;;) 
     {
@@ -150,6 +155,94 @@ void TaskLoRaSender(void *pvParameters) {
         }
 
         //myLat += 0.0001;  //測試用, 模擬移動
+        
+        #if ENABLE_SLEEP
+        //Light Sleep
+        remainingTime = nextInterval;
+        while (remainingTime > 0) {
+            uint32_t startWaitTime = millis(); // 記錄開始時間
+
+
+            if (xSemaphoreTake(sleepLock, 0) != pdTRUE) {
+                vTaskDelay(100 / portTICK_PERIOD_MS);
+                uint32_t passed = millis() - startWaitTime;
+                if (passed >= remainingTime) remainingTime = 0;
+                else remainingTime -= passed;
+                continue; 
+            }
+            DEBUG_PRINTLN("[LoRa] Got Lock! (Holding...)");
+            vTaskDelay(100 / portTICK_PERIOD_MS);
+
+            uint32_t passedBuffer = millis() - startWaitTime;
+            if (passedBuffer >= remainingTime) {
+                remainingTime = 0;
+            } else {
+                remainingTime -= passedBuffer;
+            }
+
+            // 設定剩餘時間
+            if(remainingTime <= 0){
+                DEBUG_PRINTLN("[LoRa] Giving Lock back...");
+                xSemaphoreGive(sleepLock);
+                break;
+            }
+            uint32_t sleepStart = millis();
+            esp_sleep_enable_timer_wakeup(remainingTime * 1000);
+
+            /*
+            //睡前鎖定所有 SPI 輸出腳位
+            digitalWrite(LORA_CS, HIGH);
+            gpio_hold_en((gpio_num_t)LORA_CS);
+            digitalWrite(LORA_SCK, LOW); 
+            gpio_hold_en((gpio_num_t)SCK);
+            digitalWrite(LORA_MOSI, LOW); 
+            gpio_hold_en((gpio_num_t)MOSI);
+            digitalWrite(10, HIGH);
+            gpio_hold_en((gpio_num_t)10);
+            */
+            // 開始淺眠
+            DEBUG_PRINT("Going to Light Sleep...");
+            DEBUG_PRINTF("remainingTime:%d", remainingTime);
+            DEBUG_FLUSH();  //確保 Log 印完再睡
+            esp_light_sleep_start();
+
+            /*
+            //解除鎖定輸出電位
+            gpio_hold_dis((gpio_num_t)LORA_CS);
+            gpio_hold_dis((gpio_num_t)LORA_SCK);
+            gpio_hold_dis((gpio_num_t)LORA_MOSI);
+            gpio_hold_dis((gpio_num_t)10);
+            */
+
+            DEBUG_PRINTLN("[LoRa] Giving Lock back...");
+            xSemaphoreGive(sleepLock);
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+            //扣除已經睡掉的時間
+            uint32_t sleptTotal = millis() - sleepStart;
+            
+            if (sleptTotal >= remainingTime) {
+                remainingTime = 0;
+            } else {
+                remainingTime -= sleptTotal;
+            }
+
+            // 檢查是誰叫醒
+            esp_sleep_wakeup_cause_t cause = esp_sleep_get_wakeup_cause();
+
+            if (cause == ESP_SLEEP_WAKEUP_GPIO) {
+                // LoRa 封包
+                DEBUG_PRINT("Woke up by LoRa");
+                // 讓接收任務有足夠時間處理
+                vTaskDelay(10 / portTICK_PERIOD_MS);
+            }
+            else if (cause == ESP_SLEEP_WAKEUP_TIMER) {
+                DEBUG_PRINT("Woke up by Timer");
+                break;
+            }
+        }
+        #else
         vTaskDelay(nextInterval / portTICK_PERIOD_MS);
+        #endif
     }
 }
