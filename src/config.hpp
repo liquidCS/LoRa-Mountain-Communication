@@ -9,6 +9,10 @@
 #define GPS_RX 38 // PinRx for GPS module on EPS32
 #define GPS_UPDATE_INTERVAL_MS 10000 // Update GPS data every x ms 
 
+// === Device Configuration ===
+#define DEVICE_ID_MAX_LENGTH 16
+#define DEVICE_LIST_MAX_SIZE 16 // Max 256 devices in the list
+
 // === LoRa Configuration ===
 // 硬體腳位定義
 #define LORA_CS   5

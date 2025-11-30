@@ -4,8 +4,6 @@
 #include <Arduino.h>
 #include "config.hpp"
 
-#define DEVICE_ID_MAX_LENGTH 16
-
 
 enum DeviceStatus {
     DEVICE_STATUS_UNKNOWN,
@@ -33,16 +31,19 @@ typedef struct gps_location_t
 class Device
 {
 protected:
-    uint64_t       UID;                         // Unique ID of the device should be 48-bit from ESP and cannot be changed
+    uint32_t       UID;                         // Unique ID of the device should be 48-bit from ESP and cannot be changed
+    DeviceStatus status;                        // Status of the device
 
 public:
     char            ID[DEVICE_ID_MAX_LENGTH];   // Name of the device can be changed
     gps_location_t  location;                   // Last known GPS location with timestamp
 
 
-    uint64_t GetUID() { return UID; } 
+    uint32_t GetUID() { return UID; } 
     char *GetID() { return ID; }
     void SetID(const char* newID) { strncpy(ID, newID, DEVICE_ID_MAX_LENGTH); ID[DEVICE_ID_MAX_LENGTH - 1] = '\0'; }
+    DeviceStatus GetStatus() { return status; }
+    void SetStatus(DeviceStatus newStatus) { status = newStatus; }
 };
 
 
@@ -52,7 +53,8 @@ protected:
     DeviceStatus status;     // Status of the other device (e.g., active, inactive)
 
 public:
-    OtherDevice(uint64_t _UID) : status(DEVICE_STATUS_UNKNOWN) { UID = _UID; }                  // Constructor
+    OtherDevice() : status(DEVICE_STATUS_UNKNOWN) { UID = 0; }                                                                  // Default constructor
+    OtherDevice(uint32_t _UID, DeviceStatus _status = DEVICE_STATUS_UNKNOWN) : status(_status) { UID = _UID; }                  // Constructor for new device
 };
 
 
@@ -66,6 +68,10 @@ public:
     MyDevice();                                 // Constructor
 };
 
+uint16_t CreateNewDevice(const uint32_t UID);
+uint16_t FindDeviceIndexByUID(const uint32_t UID);
+bool CheckDeviceExists(const uint32_t UID);
+void UpdateDeviceLocation(const uint32_t UID, double lat, double lon, double att);
 
 extern MyDevice myDevice; // Info of this device 
 
