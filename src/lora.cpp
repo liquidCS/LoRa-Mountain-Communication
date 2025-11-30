@@ -141,7 +141,13 @@ void TaskLoRaSender(void *pvParameters) {
         // 參數解釋：目標, 資料指標, 資料"數量"(不是Bytes)
         // 因為用了 <NodeData> 模板，最後一個參數填 1 (代表 1 個 NodeData)
         radio.createPacketAndSend<NodeData>(BROADCAST_ADDR, &payload, 1);
-        
+
+        //檢查封包是否發完
+        while (radio.getSendQueueSize() > 0 || digitalRead(LORA_BUSY) == HIGH) {
+            //DEBUG_PRINT("LoRa is busy processing... waiting.");
+            vTaskDelay(50 / portTICK_PERIOD_MS); 
+        }
+        //vTaskDelay(500 / portTICK_PERIOD_MS);   //讓封包有時間發完
         
         DEBUG_PRINTLN("Sent!");
 
@@ -201,6 +207,7 @@ void TaskLoRaSender(void *pvParameters) {
             digitalWrite(10, HIGH);
             gpio_hold_en((gpio_num_t)10);
             */
+
             // 開始淺眠
             DEBUG_PRINT("Going to Light Sleep...");
             //DEBUG_PRINTF("remainingTime:%d", remainingTime);
@@ -214,6 +221,20 @@ void TaskLoRaSender(void *pvParameters) {
             gpio_hold_dis((gpio_num_t)LORA_MOSI);
             gpio_hold_dis((gpio_num_t)10);
             */
+
+            ///*
+            //Self-Test
+            DEBUG_PRINT("[Self-Test] Reading Noise Level... ");
+            //vTaskDelay(100 / portTICK_PERIOD_MS);
+            float noise = radio.radio->getRSSI(); 
+            // 檢查結果
+            if (noise == -164.0 || noise == 0.0) { 
+                // 回傳極值視爲有錯誤
+                DEBUG_PRINT("FAIL! (Radio is dead or SPI broken)");
+            } else {
+                DEBUG_PRINTF("PASS! (RSSI: %.2f dBm)\n", noise);
+            }
+            //*/
 
             //DEBUG_PRINTLN("[LoRa] Giving Lock back...");
             xSemaphoreGive(sleepLock);
@@ -240,9 +261,9 @@ void TaskLoRaSender(void *pvParameters) {
             else if (cause == ESP_SLEEP_WAKEUP_TIMER) {
                 DEBUG_PRINT("Woke up by Timer");
                 //重啟Lora
-                radio.restartRadio();
-                vTaskDelay(1000 / portTICK_PERIOD_MS);
-                radio.start();
+                //radio.restartRadio();
+                //vTaskDelay(1000 / portTICK_PERIOD_MS);
+                //radio.start();
                 break;
             }
         }
