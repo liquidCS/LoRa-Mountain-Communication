@@ -21,9 +21,18 @@ void Epaper::_screenRefreshLoopTask(void *parameter) {
 
 void Epaper::_screenRefreshLoop() {
     for (;;) {
+        #if ENABLE_SLEEP
+        xSemaphoreTake(sleepLock, portMAX_DELAY);
+        drawFullScreen();
+        DEBUG_PRINT(F("Update screen"));
+        //delay(5000);
+        xSemaphoreGive(sleepLock);
+        vTaskDelay(10000 / portTICK_PERIOD_MS);
+        #else
         drawFullScreen();
         DEBUG_PRINT(F("Update screen"));
         vTaskDelay(screen_update_delay / portTICK_PERIOD_MS);
+        #endif
     }
 }
 

@@ -9,6 +9,10 @@
 #include "gps.hpp"
 #include "device.hpp"
 
+#if ENABLE_SLEEP
+extern SemaphoreHandle_t sleepLock;
+#endif
+
 class Epaper {
 public:
     Epaper(); // Constructor
