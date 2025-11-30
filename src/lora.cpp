@@ -150,7 +150,7 @@ void TaskLoRaSender(void *pvParameters) {
         }
         //vTaskDelay(500 / portTICK_PERIOD_MS);   //讓封包有時間發完
         #endif
-
+        
         DEBUG_PRINTLN("Sent!");
 
         // 隨機間隔邏輯
@@ -224,7 +224,7 @@ void TaskLoRaSender(void *pvParameters) {
             gpio_hold_dis((gpio_num_t)10);
             */
 
-            /*
+            ///*
             //Self-Test
             DEBUG_PRINT("[Self-Test] Reading Noise Level... ");
             //vTaskDelay(100 / portTICK_PERIOD_MS);
@@ -236,7 +236,7 @@ void TaskLoRaSender(void *pvParameters) {
             } else {
                 DEBUG_PRINTF("PASS! (RSSI: %.2f dBm)\n", noise);
             }
-            */
+            //*/
 
             //DEBUG_PRINTLN("[LoRa] Giving Lock back...");
             xSemaphoreGive(sleepLock);
