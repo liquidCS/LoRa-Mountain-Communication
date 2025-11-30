@@ -137,11 +137,7 @@ void TaskLoRaSender(void *pvParameters) {
 
         DEBUG_PRINT("[TX] Sending Packet... ");
         
-        #if ENABLE_SLEEP
-        radio.restartRadio();
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        radio.start();
-        #endif
+        
         // 參數解釋：目標, 資料指標, 資料"數量"(不是Bytes)
         // 因為用了 <NodeData> 模板，最後一個參數填 1 (代表 1 個 NodeData)
         radio.createPacketAndSend<NodeData>(BROADCAST_ADDR, &payload, 1);
@@ -219,7 +215,7 @@ void TaskLoRaSender(void *pvParameters) {
             gpio_hold_dis((gpio_num_t)10);
             */
 
-            DEBUG_PRINTLN("[LoRa] Giving Lock back...");
+            //DEBUG_PRINTLN("[LoRa] Giving Lock back...");
             xSemaphoreGive(sleepLock);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
 
@@ -239,10 +235,14 @@ void TaskLoRaSender(void *pvParameters) {
                 // LoRa 封包
                 DEBUG_PRINT("Woke up by LoRa");
                 // 讓接收任務有足夠時間處理
-                vTaskDelay(10 / portTICK_PERIOD_MS);
+                vTaskDelay(100 / portTICK_PERIOD_MS);
             }
             else if (cause == ESP_SLEEP_WAKEUP_TIMER) {
                 DEBUG_PRINT("Woke up by Timer");
+                //重啟Lora
+                radio.restartRadio();
+                vTaskDelay(1000 / portTICK_PERIOD_MS);
+                radio.start();
                 break;
             }
         }
