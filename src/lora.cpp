@@ -142,12 +142,14 @@ void TaskLoRaSender(void *pvParameters) {
         // 因為用了 <NodeData> 模板，最後一個參數填 1 (代表 1 個 NodeData)
         radio.createPacketAndSend<NodeData>(BROADCAST_ADDR, &payload, 1);
 
+        #if ENABLE_SLEEP
         //檢查封包是否發完
         while (radio.getSendQueueSize() > 0 || digitalRead(LORA_BUSY) == HIGH) {
             //DEBUG_PRINT("LoRa is busy processing... waiting.");
             vTaskDelay(50 / portTICK_PERIOD_MS); 
         }
         //vTaskDelay(500 / portTICK_PERIOD_MS);   //讓封包有時間發完
+        #endif
         
         DEBUG_PRINTLN("Sent!");
 
