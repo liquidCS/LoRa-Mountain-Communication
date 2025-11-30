@@ -15,7 +15,7 @@ extern SemaphoreHandle_t sleepLock;
 // 封包結構定義
 struct __attribute__((packed)) NodeData {
     uint8_t appId;
-    uint16_t nodeId;    
+    uint32_t nodeId;    
     float lat;          
     float lon;          
     uint8_t battery;    

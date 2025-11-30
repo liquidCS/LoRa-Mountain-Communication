@@ -1,5 +1,4 @@
 #include "lora.hpp"
-#include "nodes.hpp"
 
 LoraMesher& radio = LoraMesher::getInstance();
 
@@ -15,7 +14,6 @@ void TaskLoraStart(){
     esp_sleep_enable_gpio_wakeup();
 
     initLoRaMesh();
-    initNodeManager();
     xTaskCreate(
         TaskLoRaSender,  // 任務函式
         "LoRaSender",    // 任務名稱
@@ -98,7 +96,18 @@ void processReceivedPackets(void*) {
                     radio.deletePacket(packet);
                     continue; // 跳過這次迴圈，處理下一個封包
                 }
-                updateRemoteNode(*receivedData);
+
+                // Check if device exists, if not create new 
+                if(!CheckDeviceExists(receivedData->nodeId)) {
+                    if(CreateNewDevice(receivedData->nodeId) == DEVICE_LIST_MAX_SIZE) { // Failed to create new device
+                        DEBUG_PRINTF("Failed to create new device for UID: 0x%X\n", receivedData->nodeId);
+                        continue;
+                    }
+                }
+
+                UpdateDeviceLocation(receivedData->nodeId, receivedData->lat, receivedData->lon, 0.0);
+
+
                 DEBUG_PRINTF("     From UID: 0x%X |  GPS: %.6f, %.6f | Bat: %d%% | SOS: %d | Dis: %.2f m \n", 
                               receivedData->nodeId,
                               receivedData->lat, receivedData->lon, 
@@ -122,9 +131,8 @@ void TaskLoRaSender(void *pvParameters) {
     for (;;) 
     {
         NodeData payload;
-        uint64_t fullUID = myDevice.GetUID();
         payload.appId = MOUNTAIN_APP_ID;
-        payload.nodeId = (uint16_t)(fullUID & 0xFFFF);
+        payload.nodeId = myDevice.GetUID();
         if (myDevice.location.valid) { 
             payload.lat = myDevice.location.latitude;
             payload.lon = myDevice.location.longitude;
