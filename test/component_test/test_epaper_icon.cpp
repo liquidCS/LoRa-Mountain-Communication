@@ -25,12 +25,11 @@ void test_epaper_icon_functionality() {
   display.fillScreen(GxEPD_WHITE);
   
   // Draw Icons
-  drawIcon(display, IconType::MOUNTAIN_BACKGROUND, 0, 0);
-  // drawIcon(display, IconType::SATELLITE_SIGNAL_GOOD, 10, 10);
-  // drawIcon(display, IconType::GPS_LOCATION_GOOD, 40, 10);
-  drawIcon(display, IconType::GPS_LOCATION_BAD, 70, 30);
-  // drawIcon(display, IconType::SATELLITE_SIGNAL_BAD, 100, 10);
-
+  drawIcon(IconType::MOUNTAIN_BACKGROUND, 0, 0, GxEPD_BLACK);
+  // drawIcon( IconType::SATELLITE_SIGNAL_GOOD, 0, 0, GxEPD_BLACK);
+  // drawIcon( IconType::GPS_LOCATION_GOOD, 40, 10, GxEPD_BLACK);
+  drawIcon( IconType::GPS_LOCATION_BAD, 70, 30, GxEPD_RED);
+  // drawIcon(IconType::SATELLITE_SIGNAL_BAD, 0, 0, GxEPD_BLACK);
   // Refresh screen
   display.display();
 

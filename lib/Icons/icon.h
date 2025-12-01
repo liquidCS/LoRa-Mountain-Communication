@@ -369,28 +369,19 @@ enum class IconType {
 };
 
 // ====================
-// 3. 函式宣告 (Declaration)
+// 3. 型別與 Extern 宣告 
 // ====================
+typedef GxEPD2_3C<GxEPD2_154_Z90c, GxEPD2_154_Z90c::HEIGHT> MyDisplay;
 
-// 宣告統一的 Icon 繪圖函式
-// 參數：IconType 來識別要畫什麼，x/y 來決定位置
-void drawIcon(MyDisplay &display, IconType type, int x, int y);
+// 關鍵：宣告 display 是外部變數
+// 這讓 icon.cpp 知道有一個全域的 display 可以直接用
+extern MyDisplay display;
 
-// // draw mountain background
-// void drawMountainBackground(MyDisplay &display);
-
-// // 宣告一個畫 "無衛星訊號" 圖示的函式
-// // 我們需要把 display 物件傳進去 (使用 reference &)
-// void drawNoSatelliteIcon(MyDisplay &display, int x, int y);
-
-// // draw good satellite signal icon
-// void drawSatelliteIcon(MyDisplay &display, int x, int y);
-
-// // draw gps location icon
-// void drawGpsIcon(MyDisplay &display, int x, int y);
-
-// // draw no gps icon, no location
-// void drawNoGpsIcon(MyDisplay &display, int x, int y);
+// ====================
+// 4. 函式宣告
+// ====================
+// 移除 display 參數，只剩下邏輯參數
+void drawIcon(IconType type, int x, int y, uint16_t color);
 
 
 #endif // [防止重複引用] 結尾
