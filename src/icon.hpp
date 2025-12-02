@@ -1,0 +1,59 @@
+#ifndef ICON_H 
+#define ICON_H
+
+#include <Arduino.h>
+#include <GxEPD2_3C.h> 
+#include "epaper.hpp"
+
+// ====================
+// 1. 圖片數據 (Data)
+// ====================
+
+// 為了避免多個檔案引用時發生 "multiple definition" 錯誤，在陣列前加上 static
+const unsigned char gImage_satellite_icon[60] = { /* 0X00,0X01,0X14,0X00,0X14,0X00, */
+0X00,0X00,0X00,0X30,0X00,0X00,0X78,0X00,0X00,0X7C,0X00,0X00,0X3E,0X00,0X00,0X1F,
+0X00,0X00,0X0F,0X80,0X00,0X07,0XA0,0X00,0X03,0X70,0X00,0X00,0XF8,0X00,0X03,0XF0,
+0X00,0X03,0XEC,0X00,0X03,0XDE,0X00,0X00,0XDF,0X00,0X88,0X0F,0X80,0X14,0X07,0XC0,
+0X4C,0X03,0XE0,0X20,0X01,0XE0,0X18,0X00,0XC0,0X04,0X00,0X00,};
+
+const unsigned char gImage_ban_icon[60] = { /* 0X00,0X01,0X14,0X00,0X14,0X00, */
+0X03,0XFC,0X00,0X0F,0XFF,0X00,0X1E,0X07,0X80,0X38,0X01,0XC0,0X70,0X03,0XE0,0X60,
+0X07,0X60,0XE0,0X0E,0X70,0XC0,0X1C,0X30,0XC0,0X38,0X30,0XC0,0X70,0X30,0XC0,0XE0,
+0X30,0XC1,0XC0,0X30,0XC3,0X80,0X30,0XE7,0X00,0X70,0X6E,0X00,0X60,0X7C,0X00,0XE0,
+0X38,0X01,0XC0,0X1E,0X07,0X80,0X0F,0XFF,0X00,0X03,0XFC,0X00,};
+
+const unsigned char gImage_gps_icon[60] = { /* 0X10,0X01,0X00,0X14,0X00,0X14, */
+0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X01,0XF8,0X00,0X03,0XFC,0X00,0X07,
+0X9E,0X00,0X07,0X0E,0X00,0X06,0X06,0X00,0X06,0X07,0X00,0X06,0X06,0X00,0X07,0X0E,
+0X00,0X07,0XFE,0X00,0X03,0XFC,0X00,0X01,0XF8,0X00,0X01,0XF8,0X00,0X00,0XF0,0X00,
+0X00,0X60,0X00,0X00,0X60,0X00,0X00,0X00,0X00,0X00,0X00,0X00,};
+
+const unsigned char gImage_no_location[60] = { /* 0X10,0X01,0X00,0X14,0X00,0X14, */
+0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X80,0X01,0XF1,0X80,0X03,0XE3,0X00,0X07,
+0X86,0X00,0X0F,0X0F,0X00,0X0E,0X1F,0X00,0X0E,0X37,0X00,0X0C,0X67,0X00,0X08,0XCF,
+0X00,0X01,0XFF,0X00,0X03,0XFE,0X00,0X07,0XFC,0X00,0X0F,0XFC,0X00,0X19,0XF8,0X00,
+0X30,0XF0,0X00,0X00,0X70,0X00,0X00,0X00,0X00,0X00,0X00,0X00,};
+
+// ====================
+// 2. 函式型別和列舉 (TypeDef and Enum)
+// ====================
+
+// 定義所有 Icon 的名稱 (使用 enum class 讓名稱更安全)
+enum class IconType {
+    // 簡單的單色 Icon
+    SATELLITE_SIGNAL_GOOD,
+    GPS_LOCATION_GOOD,
+    GPS_LOCATION_BAD, // 即 no_location
+    // 複合的雙色 Icon
+    SATELLITE_SIGNAL_BAD // 即 satellite + ban
+};
+
+
+// ====================
+// 4. 函式宣告
+// ====================
+// 移除 display 參數，只剩下邏輯參數
+void drawIcon(IconType type, int x, int y, uint16_t color);
+
+
+#endif // [防止重複引用] 結尾

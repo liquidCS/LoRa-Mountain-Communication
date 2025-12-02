@@ -19,13 +19,13 @@ public:
     void TaskScreenUpdate();
     void drawFullScreen();
     void clearDisplay();
+    GxEPD2_3C<GxEPD2_154_Z90c, GxEPD2_154_Z90c::HEIGHT> display;
 
 private:
     static const uint16_t FREEMONO_FONT_HEIGHT = 12;
     static const uint16_t topbar_height = 20;
     static const uint16_t screen_update_delay = 60000; // ms
 
-    GxEPD2_3C<GxEPD2_154_Z90c, GxEPD2_154_Z90c::HEIGHT> display;
 
     void _initDisplay();
     void _screenRefreshLoop();
