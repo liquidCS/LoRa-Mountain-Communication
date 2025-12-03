@@ -2,5 +2,6 @@
     "files.associations": {
         "istream": "cpp",
         "functional": "cpp"
-    }
+    },
+    "cmake.ignoreCMakeListsMissing": true
 }

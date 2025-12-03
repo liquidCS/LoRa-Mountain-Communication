@@ -18,6 +18,8 @@ bool GPS::GPSerialUpdate()
 
         if(gpsplus.location.isUpdated())
         {
+            // DEBUG_PRINTLN(F("Waiting for location update..."));
+            // xSemaphoreTake(myDevice.location.xMutex, portMAX_DELAY); // protect location update
             myDevice.location.valid = true;
             myDevice.location.latitude = gpsplus.location.lat(); // Update location
             myDevice.location.longitude = gpsplus.location.lng();
@@ -27,16 +29,21 @@ bool GPS::GPSerialUpdate()
             myDevice.location.updateTime.hour = gpsplus.time.hour();
             myDevice.location.updateTime.minute = gpsplus.time.minute();
             myDevice.location.updateTime.second = gpsplus.time.second();
+            // xSemaphoreGive(myDevice.location.xMutex);
 
             DEBUG_PRINTF("Update location: Lat: %.6f, Lon: %.6f Att: %.2f\n", myDevice.location.latitude, myDevice.location.longitude, myDevice.location.attitude);
         }
 
         if(gpsplus.time.isUpdated())
         {
-            myDevice.time.valid = true;
-            myDevice.time.hour = gpsplus.time.hour();
-            myDevice.time.minute = gpsplus.time.minute();
-            myDevice.time.second = gpsplus.time.second(); 
+            if (xSemaphoreTake(myDevice.time.xMutex, portMAX_DELAY) == pdTRUE) { // protect time update
+                myDevice.time.valid = true;
+                myDevice.time.hour = gpsplus.time.hour();
+                myDevice.time.minute = gpsplus.time.minute();
+                myDevice.time.second = gpsplus.time.second(); 
+                xSemaphoreGive(myDevice.time.xMutex);
+            } 
+
             DEBUG_PRINTF("Update Time: %02d:%02d\n", myDevice.time.hour, myDevice.time.minute);
             return false;
         }

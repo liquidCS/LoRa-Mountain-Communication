@@ -4,7 +4,7 @@ MyDevice myDevice; // store current device info
 OtherDevice deviceList[DEVICE_LIST_MAX_SIZE];  // store other devices
 
 
-MyDevice::MyDevice()
+MyDevice::MyDevice() : Device()
 {
     UID = ESP.getEfuseMac(); // 48-bit unique ID from ESP32
 
@@ -14,6 +14,10 @@ MyDevice::MyDevice()
     else {
         // Load device info from persistent storage (not implemented)
     }
+
+    time.xMutex = xSemaphoreCreateBinary();
+    assert(time.xMutex != NULL); 
+    xSemaphoreGive(time.xMutex);
 
     DEBUG_PRINTF("Device ID: %s\n", myDevice.ID);
     DEBUG_PRINTF("Device UID: %08X\n", myDevice.UID);
@@ -52,10 +56,13 @@ void UpdateDeviceLocation(const uint32_t UID, double lat, double lon, double att
 {
     uint16_t index = FindDeviceIndexByUID(UID);
     if (index < DEVICE_LIST_MAX_SIZE) {
-        deviceList[index].location.valid = true;
-        deviceList[index].location.latitude = lat;
-        deviceList[index].location.longitude = lon;
-        deviceList[index].location.attitude = att;
+        if(xSemaphoreTake(deviceList[index].location.xMutex, portMAX_DELAY) == pdTRUE) { // protect location update
+            deviceList[index].location.valid = true;
+            deviceList[index].location.latitude = lat;
+            deviceList[index].location.longitude = lon;
+            deviceList[index].location.attitude = att;
+            xSemaphoreGive(deviceList[index].location.xMutex);
+        }
 
         DEBUG_PRINTF("Updated device (UID: %08X) location to Lat: %.6f, Lon: %.6f, Att: %.2f\n", 
                       UID, lat, lon, att);
