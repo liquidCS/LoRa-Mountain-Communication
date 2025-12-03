@@ -1,4 +1,4 @@
-#include "epaper.h"
+#include "epaper.hpp"
 
 #define FREEMONO_FONT_HEIGHT 12
 
@@ -6,7 +6,13 @@ Epaper::Epaper()
     : display(GxEPD2_154_Z90c(/*CS=*/10, /*DC=*/17, /*RST=*/16, /*BUSY=*/4)) {}
 
 void Epaper::TaskScreenUpdate() {
-    xTaskCreate(_screenRefreshLoopTask, "DisplayUpdateTask", 10000, this, 1, NULL);
+    xTaskCreate(
+        _screenRefreshLoopTask, 
+        "DisplayUpdateTask", 
+        10000, 
+        this, 
+        1, 
+        NULL);
 }
 
 void Epaper::_screenRefreshLoopTask(void *parameter) {
@@ -15,9 +21,18 @@ void Epaper::_screenRefreshLoopTask(void *parameter) {
 
 void Epaper::_screenRefreshLoop() {
     for (;;) {
+        #if ENABLE_SLEEP
+        xSemaphoreTake(sleepLock, portMAX_DELAY);
         drawFullScreen();
-        Serial.println("Update screen.");
+        DEBUG_PRINT(F("Update screen"));
+        //delay(5000);
+        xSemaphoreGive(sleepLock);
+        vTaskDelay(10000 / portTICK_PERIOD_MS);
+        #else
+        drawFullScreen();
+        DEBUG_PRINT(F("Update screen"));
         vTaskDelay(screen_update_delay / portTICK_PERIOD_MS);
+        #endif
     }
 }
 
