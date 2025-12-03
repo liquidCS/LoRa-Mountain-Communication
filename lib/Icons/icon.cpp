@@ -8,7 +8,8 @@ const unsigned char* iconArray[] = {
     gImage_satellite_icon,  // index 1
     gImage_gps_icon,        // index 2
     gImage_no_location,     // index 3
-    gImage_satellite_icon   // index 4 (SAT_BAD 共用 satellite 底圖)
+    gImage_person1,         // index 4
+    gImage_satellite_icon   // index 5 (SAT_BAD 共用 satellite 底圖)
 };
 
 // 定義大小常數
@@ -27,6 +28,10 @@ void drawIcon(IconType type, int x, int y, uint16_t color) {
     if (type == IconType::MOUNTAIN_BACKGROUND) {
         w = SIZE_LARGE;
         h = SIZE_LARGE;
+    }
+    else if (type == IconType::PERSON1) {
+        w = 40;
+        h = 30;
     }
 
     // 2. 判斷邏輯
