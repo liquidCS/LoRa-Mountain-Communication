@@ -70,3 +70,21 @@ void UpdateDeviceLocation(const uint32_t UID, double lat, double lon, double att
         DEBUG_PRINTF("Device with UID: %08X not found for location update.\n", UID);
     }
 }
+
+void UpdateDeviceID(char* newID) {
+    uint16_t index = FindDeviceIndexByUID(myDevice.GetUID());
+    if (index < DEVICE_LIST_MAX_SIZE)
+    {
+        if(strlen(newID) >= DEVICE_ID_MAX_LENGTH) {
+            newID[DEVICE_ID_MAX_LENGTH - 1] = '\0'; // Truncate if too long
+            deviceList[index].SetID(newID, DEVICE_ID_MAX_LENGTH);
+            DEBUG_PRINTLN("Warning: New ID length exceeds maximum, truncated.");
+        }
+        else {
+            deviceList[index].SetID(newID, strlen(newID) + 1);
+            DEBUG_PRINTF("Updating device ID to: %s\n", newID);
+        }
+    } else {
+        DEBUG_PRINTLN("Device not found for ID update.");
+    }
+}

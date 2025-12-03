@@ -48,7 +48,7 @@ public:
 
     uint32_t GetUID() { return UID; } 
     const char *GetID() { return ID; }
-    void SetID(const char* newID) { strncpy(ID, newID, DEVICE_ID_MAX_LENGTH); ID[DEVICE_ID_MAX_LENGTH - 1] = '\0'; }
+    void SetID(const char* newID, uint8_t n) { strncpy(ID, newID, n); }
     DeviceStatus GetStatus() { return status; }
     void SetStatus(DeviceStatus newStatus) { status = newStatus; }
 };
@@ -79,6 +79,7 @@ uint16_t CreateNewDevice(const uint32_t UID);
 uint16_t FindDeviceIndexByUID(const uint32_t UID);
 bool CheckDeviceExists(const uint32_t UID);
 void UpdateDeviceLocation(const uint32_t UID, double lat, double lon, double att);
+void UpdateDeviceID(const char* newID);
 
 extern MyDevice myDevice; // Info of this device 
 
