@@ -1,4 +1,4 @@
-#include "test_display.h"
+#include "test_display.hpp"
 
 // Define the display object here, and only here.
 // This is the single instance that all tests will share.
