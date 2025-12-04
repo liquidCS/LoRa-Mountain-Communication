@@ -110,8 +110,14 @@ void processReceivedPackets(void*) {
                     }
 
                     UpdateDeviceLocation(receivedData->nodeId, receivedData->lat, receivedData->lon, 0.0);
-
-
+                    
+                    
+                    #if CHECK_UNKNOW_DEVICE
+                    if (IsDeviceNameUnknown(receivedData->nodeId)) {
+                        DEBUG_PRINTF("[RX] Known Node 0x%04X but name unknown. Retrying request...\n", receivedData->nodeId);
+                        sendNameRequest(receivedData->nodeId);
+                    }
+                    #endif
                     DEBUG_PRINTF("     From UID: 0x%X |  GPS: %.6f, %.6f | Bat: %d%% | SOS: %d | Dis: %.2f m \n", 
                                 receivedData->nodeId,
                                 receivedData->lat, receivedData->lon, 

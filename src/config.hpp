@@ -26,6 +26,9 @@
 // === Sleep Configuration ===
 #define ENABLE_SLEEP 0
 
+// === Check new device unknow ===
+#define CHECK_UNKNOW_DEVICE 0
+
 #ifndef DEBUG
 #define LORA_RANDOM_INTERVAL_BASE_MS 52000 // Base interval for LoRa sending
 #define LORA_RANDOM_INTERVAL_JITTER_MS 10000 // Jitter for LoRa sending interval *2
