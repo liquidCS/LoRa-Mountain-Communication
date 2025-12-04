@@ -71,8 +71,8 @@ void UpdateDeviceLocation(const uint32_t UID, double lat, double lon, double att
     }
 }
 
-void UpdateDeviceID(char* newID) {
-    uint16_t index = FindDeviceIndexByUID(myDevice.GetUID());
+void UpdateDeviceID(const uint32_t UID, char* newID) {
+    uint16_t index = FindDeviceIndexByUID(UID);
     if (index < DEVICE_LIST_MAX_SIZE)
     {
         if(strlen(newID) >= DEVICE_ID_MAX_LENGTH) {
