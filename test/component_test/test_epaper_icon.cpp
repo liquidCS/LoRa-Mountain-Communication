@@ -1,7 +1,7 @@
 // #include <Arduino.h>
 // #include <GxEPD2_3C.h>
 // #include <Fonts/FreeMonoBold9pt7b.h>
-#include "test_display.h"
+#include "test_display.hpp"
 
 
 
@@ -339,60 +339,214 @@ const unsigned char gImage_mountain[5000] = { /* 0X10,0X01,0X00,0XC8,0X00,0XC8, 
 0X00,0X00,0X00,0X00,0X00,0X00,0X3E,0X00,0X00,0X00,0X00,0X00,0X01,0XE0,0X00,0X00,
 0X7C,0X3C,0X7F,0X80,0X00,0X00,0X0F,0XDE,};
 
+const unsigned char gImage_arrow_E[42] = { /* 0X00,0X01,0X0A,0X00,0X15,0X00, */
+0X00,0X00,0X20,0X00,0X60,0X00,0X70,0X00,0X78,0X00,0X6C,0X00,0X6C,0X00,0X66,0X00,
+0X63,0X00,0X61,0X80,0X61,0X80,0X63,0X00,0X66,0X00,0X6C,0X00,0X6C,0X00,0X78,0X00,
+0X70,0X00,0X60,0X00,0X00,0X00,0X00,0X00,0X00,0X00,};
+
+const unsigned char gImage_arrow_N[36] = { /* 0X00,0X01,0X15,0X00,0X0C,0X00, */
+0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X60,0X00,0X00,0XF0,0X00,0X01,
+0X98,0X00,0X07,0X0E,0X00,0X0E,0X07,0X00,0X18,0X01,0X80,0X3F,0XFF,0XE0,0X3F,0XFF,
+0XC0,0X00,0X00,0X00,};
+
+const unsigned char gImage_arrow_W[42] = { /* 0X00,0X01,0X0C,0X00,0X15,0X00, */
+0X00,0X00,0X00,0X00,0X00,0X40,0X00,0X60,0X00,0XE0,0X01,0XE0,0X03,0X60,0X03,0X60,
+0X06,0X60,0X0C,0X60,0X18,0X60,0X18,0X60,0X0C,0X60,0X06,0X60,0X03,0X60,0X03,0X60,
+0X01,0XE0,0X00,0XE0,0X00,0X60,0X00,0X40,0X00,0X00,};
+
+const unsigned char gImage_arrow_S[36] = { /* 0X00,0X01,0X15,0X00,0X0C,0X00, */
+0X00,0X00,0X00,0X1F,0XFF,0XE0,0X1F,0XFF,0XE0,0X0C,0X00,0XC0,0X07,0X03,0X80,0X03,
+0X87,0X00,0X00,0XCC,0X00,0X00,0X78,0X00,0X00,0X30,0X00,0X00,0X00,0X00,0X00,0X00,
+0X00,0X00,0X00,0X00,};
+
+const unsigned char gImage_arrow_NE[54] = { /* 0X00,0X01,0X12,0X00,0X12,0X00, */
+0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X7E,0X00,0X00,0X3F,0XF8,0X00,0X18,
+0X18,0X00,0X0C,0X08,0X00,0X06,0X08,0X00,0X03,0X08,0X00,0X01,0X88,0X00,0X00,0XCC,
+0X00,0X00,0X6C,0X00,0X00,0X3C,0X00,0X00,0X1C,0X00,0X00,0X0C,0X00,0X00,0X04,0X00,
+0X00,0X00,0X00,0X00,0X00,0X00,};
+
+const unsigned char gImage_arrow_NW[32] = { /* 0X00,0X01,0X10,0X00,0X10,0X00, */
+0X00,0X00,0X00,0X00,0X00,0X7E,0X1F,0XFC,0X18,0X18,0X10,0X30,0X10,0X60,0X10,0XC0,
+0X11,0X80,0X33,0X00,0X36,0X00,0X3C,0X00,0X38,0X00,0X30,0X00,0X20,0X00,0X00,0X00,
+};
+
+const unsigned char gImage_arrow_SW[32] = { /* 0X00,0X01,0X10,0X00,0X10,0X00, */
+0X00,0X00,0X20,0X00,0X30,0X00,0X38,0X00,0X3C,0X00,0X36,0X00,0X33,0X00,0X11,0X80,
+0X10,0XC0,0X10,0X60,0X10,0X30,0X18,0X18,0X1F,0XFC,0X00,0XFE,0X00,0X00,0X00,0X00,
+};
+
+const unsigned char gImage_arrow_SE[32] = { /* 0X00,0X01,0X10,0X00,0X10,0X00, */
+0X00,0X00,0X00,0X04,0X00,0X0C,0X00,0X1C,0X00,0X3C,0X00,0X6C,0X00,0XCC,0X01,0X88,
+0X03,0X08,0X06,0X08,0X0C,0X08,0X18,0X18,0X3F,0XF8,0X7E,0X00,0X00,0X00,0X00,0X00,
+};
+
+const unsigned char gImage_person1[60] = { /* 0X00,0X01,0X14,0X00,0X14,0X00, */
+0X00,0X00,0X00,0X00,0XF0,0X00,0X03,0X0E,0X00,0X0C,0X03,0X00,0X18,0X60,0X80,0X31,
+0XF0,0XC0,0X23,0XF0,0X40,0X27,0XF0,0X20,0X46,0X70,0X20,0X40,0X60,0X20,0X40,0X60,
+0X20,0X40,0X60,0X20,0X20,0X60,0X20,0X20,0X60,0X40,0X33,0XF8,0X40,0X13,0XFC,0X80,
+0X0F,0XFB,0X00,0X06,0X06,0X00,0X01,0XF8,0X00,0X00,0X00,0X00,};
+
+const unsigned char gImage_person2[60] = { /* 0X00,0X01,0X14,0X00,0X14,0X00, */
+0X00,0X00,0X00,0X00,0XF0,0X00,0X03,0X0E,0X00,0X0C,0X03,0X00,0X18,0X60,0X80,0X31,
+0XF0,0XC0,0X21,0XF8,0X40,0X23,0X18,0X20,0X40,0X18,0X20,0X40,0X18,0X20,0X40,0X38,
+0X20,0X40,0X70,0X20,0X21,0XE0,0X20,0X23,0XFC,0X40,0X33,0XFE,0X40,0X10,0XF0,0X80,
+0X0C,0X01,0X00,0X06,0X06,0X00,0X01,0XF8,0X00,0X00,0X00,0X00,};
+
+const unsigned char gImage_person3[60] = { /* 0X00,0X01,0X14,0X00,0X14,0X00, */
+0X00,0X00,0X00,0X00,0XF0,0X00,0X03,0X0E,0X00,0X0C,0X03,0X00,0X18,0XF0,0X80,0X30,
+0XF8,0XC0,0X20,0XFC,0X40,0X20,0X1C,0X20,0X40,0X7C,0X20,0X40,0XFC,0X20,0X40,0XFC,
+0X20,0X40,0X3C,0X20,0X20,0X0C,0X20,0X20,0X7C,0X40,0X31,0XF8,0X40,0X11,0XF0,0X80,
+0X0C,0XE1,0X00,0X06,0X06,0X00,0X01,0XF8,0X00,0X00,0X00,0X00,};
+
+const unsigned char gImage_person_me[60] = { /* 0X00,0X01,0X14,0X00,0X14,0X00, */
+0X00,0X00,0X00,0X00,0XF8,0X00,0X07,0X06,0X00,0X0C,0X03,0X00,0X18,0XF1,0X80,0X33,
+0XFC,0XC0,0X23,0XFC,0X40,0X27,0X0E,0X60,0X67,0X0E,0X20,0X47,0X0E,0X20,0X43,0X9C,
+0X20,0X63,0XFC,0X20,0X61,0XF8,0X60,0X21,0XF8,0X40,0X30,0XF0,0XC0,0X18,0X60,0X80,
+0X0C,0X03,0X80,0X07,0X06,0X00,0X01,0XF8,0X00,0X00,0X00,0X00,};
+
+
+// use short names to refer to images c arrarys
+// 1. 定義圖示的代號 (其實就是 0, 1, 2, 3...)
+enum IconType {
+	// single icons
+	ICON_GPS,
+	ICON_BAN,
+	ICON_MOUNTAIN,
+	ICON_ARROW_N,
+	ICON_ARROW_E,
+	ICON_ARROW_S,
+	ICON_ARROW_W,
+	ICON_ARROW_NE,
+	ICON_ARROW_NW,
+	ICON_ARROW_SW,
+	ICON_ARROW_SE,
+	ICON_PERSON1,
+	ICON_PERSON2,
+	ICON_PERSON3,
+	ICON_PERSON_ME,
+	// composite icon with overlay
+	ICON_NO_LOCATION  // 這個有特殊疊加邏輯
+};
+
+// 2. 定義結構 (跟之前一樣，包含寬高與疊加層資訊)
+struct IconDef {
+	const unsigned char* data;
+	int width;
+	int height;
+	
+	// 疊加層 (若無則填 NULL)
+	const unsigned char* overlayData; 
+	uint16_t overlayColor;
+};
+
+// 3. 建立資料庫 (順序必須嚴格對應上面的 Enum !)
+const IconDef iconTable[] = {
+	// [0] ICON_GPS
+	{gImage_gps_icon,     20,  20,   NULL,             0},
+	
+	// [1] ICON_BAN
+	{gImage_ban_icon,     20,  20,   NULL,             0},
+	
+	// [2] ICON_MOUNTAIN
+	{gImage_mountain,     200, 200,  NULL,             0},
+
+	// [3] ICON_ARROW_N
+	{gImage_arrow_N,      21,  12,   NULL,             0},
+	// [4] ICON_ARROW_E
+	{gImage_arrow_E,      10,  21,   NULL,						 0},
+	// [5] ICON_ARROW_S
+	{gImage_arrow_S,      21,  12,   NULL,						 0},
+	// [6] ICON_ARROW_W
+	{gImage_arrow_W,      12,  21,   NULL,						 0},
+
+	// [7] ICON_ARROW_NE
+	{gImage_arrow_NE,     18,  18,   NULL,             0},
+	// [8] ICON_ARROW_NW
+	{gImage_arrow_NW,     16,  16,   NULL,             0},
+	// [9] ICON_ARROW_SW
+	{gImage_arrow_SW,     16,  16,   NULL,						 0},
+	// [10] ICON_ARROW_SE
+	{gImage_arrow_SE,     16,  16,   NULL,						 0},
+
+	// [11] ICON_PERSON1
+	{gImage_person1,      20,  20,   NULL,						 0},
+	// [12] ICON_PERSON2
+	{gImage_person2,      20,  20,   NULL,						 0},
+	// [13] ICON_PERSON3
+	{gImage_person3,      20,  20,   NULL,						 0},
+	// [14] ICON_PERSON_ME
+	{gImage_person_me,    20,  20,   NULL,						 0},
+
+	
+	// [15] ICON_NO_LOCATION (主圖+疊加圖)
+	{gImage_no_location,  20,  20,   gImage_ban_icon,  GxEPD_RED} 
+};
 
 
 // Functions
 void ePaperInit2();
 
-void drawIcon(const unsigned char* icon, int x, int y, uint16_t color) {
-    
-    // 1. 決定圖片尺寸
-    int w = 20;
-    int h = 20;
+// 參數改為 IconType
+void drawIcon(IconType type, int x, int y, uint16_t color) {
+		
+	// 安全性檢查：避免傳入的數字超出陣列範圍 (Optional but recommended)
+	if (type < 0 || type >= (sizeof(iconTable) / sizeof(iconTable[0]))) {
+		return; // 超出範圍直接不畫
+	}
 
-    // 2. 判斷邏輯
-        
-    if(icon == gImage_no_location) {
-        // 畫底圖 (衛星) - 使用傳入顏色 (通常黑)
-        display.drawBitmap(x, y, gImage_no_location, w, h, color);
-        
-        // 畫禁止符號 (Ban) - 強制紅
-        display.drawBitmap(x, y, gImage_ban_icon, w, h, GxEPD_RED);
+	// --- 核心邏輯 (O(1) 存取) ---
+	// 直接用 type 當作 index 取得對應的設定
+	const IconDef* icon = &iconTable[type];
 
-    } else if (icon == gImage_mountain) {
-        display.drawBitmap(x, y, icon, 200, 200, color);
-    } else {
-        // === 一般情況 ===
-        display.drawBitmap(x, y, icon, w, h, color);
-    }
+	// 1. 畫主圖
+	display.drawBitmap(x, y, icon->data, icon->width, icon->height, color);
+
+	// 2. 處理疊加圖 (如果有的話)
+	if (icon->overlayData != NULL) {
+		display.drawBitmap(x, y, icon->overlayData, icon->width, icon->height, icon->overlayColor);
+	}
 }
 
 
 // Main ePaper test function
 void test_epaper_icon_functionality() {
 
-  // Init e-paper Display
-  ePaperInit2();
+	// Init e-paper Display
+	ePaperInit2();
 
-  // Back Ground
-  display.fillScreen(GxEPD_WHITE);
-  
-  // Draw Icons
-  drawIcon(gImage_mountain, 0, 0, GxEPD_BLACK);
-  // drawIcon( IconType::SATELLITE_SIGNAL_GOOD, 0, 0, GxEPD_BLACK);
-  // drawIcon( IconType::GPS_LOCATION_GOOD, 40, 10, GxEPD_BLACK);
-  drawIcon(gImage_no_location, 70, 30, GxEPD_RED);
-  // drawIcon(IconType::SATELLITE_SIGNAL_BAD, 0, 0, GxEPD_BLACK);
-  // Refresh screen
-  display.display();
+	// Back Ground
+	display.fillScreen(GxEPD_WHITE);
+	
+	// Draw Icons
+	// drawIcon( ICON_MOUNTAIN, 0, 0, GxEPD_BLACK);
+	// drawIcon( ICON_ARROW_E, 120, 100, GxEPD_BLACK);
+	// drawIcon( ICON_ARROW_N, 100, 80, GxEPD_BLACK);
+	// drawIcon( ICON_ARROW_W, 80, 100, GxEPD_BLACK);
+	// drawIcon( ICON_ARROW_S, 100, 120, GxEPD_BLACK);
+	// drawIcon( ICON_ARROW_NE, 150, 50, GxEPD_BLACK);
+	// drawIcon( ICON_ARROW_NW, 50, 50, GxEPD_BLACK);
+	// drawIcon( ICON_ARROW_SE, 150, 150, GxEPD_BLACK);
+	// drawIcon( ICON_ARROW_SW, 50, 150, GxEPD_BLACK);
+	drawIcon( ICON_PERSON1, 10, 10, GxEPD_BLACK);
+	drawIcon( ICON_PERSON2, 40, 10, GxEPD_BLACK);
+	drawIcon( ICON_PERSON3, 70, 10, GxEPD_BLACK);
+	drawIcon( ICON_PERSON_ME, 100, 10, GxEPD_BLACK);
 
-  // Turn off power to protect display
-  display.powerOff();
-  Serial.println("Poweroff e-paper display");
+	// drawIcon( IconType::SATELLITE_SIGNAL_GOOD, 0, 0, GxEPD_BLACK);
+	// drawIcon( IconType::GPS_LOCATION_GOOD, 40, 10, GxEPD_BLACK);
+	// drawIcon( IconType::GPS_LOCATION_BAD, 70, 30, GxEPD_RED);
+	// drawIcon(IconType::SATELLITE_SIGNAL_BAD, 0, 0, GxEPD_BLACK);
+
+	// Refresh screen
+	display.display();
+
+	// Turn off power to protect display
+	display.powerOff();
+	Serial.println("Poweroff e-paper display");
 }
 
 void ePaperInit2() {
-  display.init(115200, true, 2, false);
-  display.setRotation(1);
-  // display.setFont(&FreeMonoBold9pt7b);
+	display.init(115200, true, 2, false);
+	display.setRotation(1);
+	// display.setFont(&FreeMonoBold9pt7b);
 }
