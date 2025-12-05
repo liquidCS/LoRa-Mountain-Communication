@@ -86,35 +86,62 @@ void processReceivedPackets(void*) {
             
             
             if (packet) {
-                // 解析數據
-                NodeData* receivedData = (NodeData*)packet->payload;
-                if (receivedData->appId != MOUNTAIN_APP_ID) {
-                    DEBUG_PRINTF("[RX] Ignored packet from 0x%X (Wrong AppID: 0x%X)\n", 
-                                    packet->src, receivedData->appId);
-                    
-                    // 這是別人的封包或是雜訊，直接刪除，不處理
-                    radio.deletePacket(packet);
-                    continue; // 跳過這次迴圈，處理下一個封包
-                }
-
-                // Check if device exists, if not create new 
-                if(!CheckDeviceExists(receivedData->nodeId)) {
-                    if(CreateNewDevice(receivedData->nodeId) == DEVICE_LIST_MAX_SIZE) { // Failed to create new device
-                        DEBUG_PRINTF("Failed to create new device for UID: 0x%X\n", receivedData->nodeId);
-                        continue;
+                uint8_t currentAppId = packet->payload[0];
+                if (currentAppId == MOUNTAIN_APP_ID) {
+                    // 解析數據
+                    NodeData* receivedData = (NodeData*)packet->payload;
+                    if (receivedData->appId != MOUNTAIN_APP_ID) {
+                        DEBUG_PRINTF("[RX] Ignored packet from 0x%X (Wrong AppID: 0x%X)\n", 
+                                        packet->src, receivedData->appId);
+                        
+                        // 這是別人的封包或是雜訊，直接刪除，不處理
+                        radio.deletePacket(packet);
+                        continue; // 跳過這次迴圈，處理下一個封包
                     }
+
+                    // Check if device exists, if not create new 
+                    if(!CheckDeviceExists(receivedData->nodeId)) {
+                        if(CreateNewDevice(receivedData->nodeId) == DEVICE_LIST_MAX_SIZE) { // Failed to create new device
+                            DEBUG_PRINTF("Failed to create new device for UID: 0x%X\n", receivedData->nodeId);
+                            continue;
+                        }
+                        DEBUG_PRINTF("[RX] New Device %04X detected! Sending Name Req...\n", receivedData->nodeId);
+                        sendNameRequest(receivedData->nodeId);
+                    }
+
+                    UpdateDeviceLocation(receivedData->nodeId, receivedData->lat, receivedData->lon, 0.0);
+                    
+                    
+                    #if CHECK_UNKNOW_DEVICE
+                    if (IsDeviceNameUnknown(receivedData->nodeId)) {
+                        DEBUG_PRINTF("[RX] Known Node 0x%04X but name unknown. Retrying request...\n", receivedData->nodeId);
+                        sendNameRequest(receivedData->nodeId);
+                    }
+                    #endif
+                    DEBUG_PRINTF("     From UID: 0x%X |  GPS: %.6f, %.6f | Bat: %d%% | SOS: %d | Dis: %.2f m \n", 
+                                receivedData->nodeId,
+                                receivedData->lat, receivedData->lon, 
+                                receivedData->battery, receivedData->isSOS,
+                                TinyGPSPlus::distanceBetween(myDevice.location.latitude, myDevice.location.longitude, receivedData->lat, receivedData->lon)
+                                );
+                }else if (currentAppId == APP_ID_NAME_REQ) {
+                    NameReqPacket* req = (NameReqPacket*)packet->payload;
+                    uint16_t myId16 = (uint16_t)(myDevice.GetUID() & 0xFFFF);
+
+                    if (req->targetId == myId16) {
+                        DEBUG_PRINTLN("[RX] Someone asked my name!");
+                        sendNameResponse();
+                    }
+                }else if (currentAppId == APP_ID_NAME_RES) {
+                    NameResPacket* res = (NameResPacket*)packet->payload;
+                    
+                    DEBUG_PRINTF("[RX] Node 0x%04X is named: %s\n", res->srcId, res->name);
+                    
+                    char tempName[DEVICE_ID_MAX_LENGTH];
+                    strncpy(tempName, res->name, DEVICE_ID_MAX_LENGTH);
+                    //tempName[DEVICE_ID_MAX_LENGTH - 1] = '\0'; // 保險
+                    UpdateDeviceID((uint32_t)res->srcId, tempName);
                 }
-
-                UpdateDeviceLocation(receivedData->nodeId, receivedData->lat, receivedData->lon, 0.0);
-
-
-                DEBUG_PRINTF("     From UID: 0x%X |  GPS: %.6f, %.6f | Bat: %d%% | SOS: %d | Dis: %.2f m \n", 
-                              receivedData->nodeId,
-                              receivedData->lat, receivedData->lon, 
-                              receivedData->battery, receivedData->isSOS,
-                              TinyGPSPlus::distanceBetween(myDevice.location.latitude, myDevice.location.longitude, receivedData->lat, receivedData->lon)
-                            );
-
                 // 刪除封包
                 radio.deletePacket(packet);
             }
@@ -122,6 +149,42 @@ void processReceivedPackets(void*) {
     }
 }
 
+void sendNameRequest(uint16_t targetId) {
+    #if ENABLE_SLEEP
+    if (xSemaphoreTake(sleepLock, portMAX_DELAY) == pdTRUE) {
+    #endif
+        NameReqPacket req;
+        req.appId = APP_ID_NAME_REQ;
+        req.targetId = targetId;
+        
+        DEBUG_PRINTF("[TX] Asking name for Node 0x%04X...\n", targetId);
+        
+        radio.createPacketAndSend(BROADCAST_ADDR, (uint8_t*)&req, sizeof(NameReqPacket));
+    #if ENABLE_SLEEP
+        xSemaphoreGive(sleepLock);
+    }
+    #endif
+}
+
+void sendNameResponse() {
+    #if ENABLE_SLEEP
+    if (xSemaphoreTake(sleepLock, portMAX_DELAY) == pdTRUE) {
+    #endif
+        NameResPacket res;
+        res.appId = APP_ID_NAME_RES;
+        res.srcId = (uint16_t)(myDevice.GetUID() & 0xFFFF);
+        // 使用 strncpy 防止溢位，保留最後一位給結束符號
+        strncpy(res.name, myDevice.GetID(), DEVICE_ID_MAX_LENGTH - 1);
+        res.name[DEVICE_ID_MAX_LENGTH - 1] = '\0'; // 確保結尾
+        
+        DEBUG_PRINTF("[TX] Replying my name: %s\n", res.name);
+        
+        radio.createPacketAndSend(BROADCAST_ADDR, (uint8_t*)&res, sizeof(NameResPacket));
+    #if ENABLE_SLEEP
+        xSemaphoreGive(sleepLock);
+    }
+    #endif
+}
 
 // 發送任務
 void TaskLoRaSender(void *pvParameters) {
