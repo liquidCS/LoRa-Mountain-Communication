@@ -89,14 +89,12 @@ void UpdateDeviceID(const uint32_t UID, char* newID) {
     }
 }
 
-bool IsDeviceNameUnknown(const uint32_t UID) {
+bool Device::IsDeviceIDValid(const uint32_t UID) {
     uint16_t index = FindDeviceIndexByUID(UID);
     if (index < DEVICE_LIST_MAX_SIZE) {
-        // 檢查名字開頭是否為預設的 "LoRaNode_"，如果是，代表還沒更新過，視為 Unknown
-        if (strncmp(deviceList[index].GetID(), "LoRaNode_", 9) == 0) {
-            return true;
-        }
-        return false;
+        return deviceList[index].validID;
+    } else {
+        DEBUG_PRINTLN("Device not found for ID check.");
+        return false; 
     }
-    return true;
 }

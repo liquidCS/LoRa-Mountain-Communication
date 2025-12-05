@@ -113,7 +113,7 @@ void processReceivedPackets(void*) {
                     
                     
                     #if CHECK_UNKNOW_DEVICE
-                    if (IsDeviceNameUnknown(receivedData->nodeId)) {
+                    if (Device::IsDeviceIDValid(receivedData->nodeId)) {
                         DEBUG_PRINTF("[RX] Known Node 0x%04X but name unknown. Retrying request...\n", receivedData->nodeId);
                         sendNameRequest(receivedData->nodeId);
                     }

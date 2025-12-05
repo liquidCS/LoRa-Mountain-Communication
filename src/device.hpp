@@ -35,6 +35,7 @@ class Device
 protected:
     uint32_t       UID;                         // Unique ID of the device should be 48-bit from ESP and cannot be changed
     char           ID[DEVICE_ID_MAX_LENGTH];    // Name of the device can be changed
+    bool           validID = false;             // Flag indicating if the ID is valid 
     DeviceStatus status;                        // Status of the device
 
 public:
@@ -51,6 +52,8 @@ public:
     void SetID(const char* newID, uint8_t n) { strncpy(ID, newID, n); }
     DeviceStatus GetStatus() { return status; }
     void SetStatus(DeviceStatus newStatus) { status = newStatus; }
+    
+    static bool IsDeviceIDValid(uint32_t UID);
 };
 
 
@@ -80,7 +83,6 @@ uint16_t FindDeviceIndexByUID(const uint32_t UID);
 bool CheckDeviceExists(const uint32_t UID);
 void UpdateDeviceLocation(const uint32_t UID, double lat, double lon, double att);
 void UpdateDeviceID(const uint32_t UID, char* newID);
-bool IsDeviceNameUnknown(const uint32_t UID);
 
 extern MyDevice myDevice; // Info of this device 
 
