@@ -42,8 +42,6 @@ void Epaper::drawFullScreen() {
     display.fillScreen(GxEPD_WHITE); // White background
     _drawMap();
     _drawTopBar();
-    // draw icon
-    drawIcon(ICON_PERSON_ME, 50,50, GxEPD_BLACK);
     display.display();
     display.powerOff();
 }
