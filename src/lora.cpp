@@ -269,7 +269,7 @@ void TaskLoRaSender(void *pvParameters) {
             uint32_t sleepStart = millis();
             esp_sleep_enable_timer_wakeup(remainingTime * 1000);
 
-            /*
+            
             //睡前鎖定所有 SPI 輸出腳位
             digitalWrite(LORA_CS, HIGH);
             gpio_hold_en((gpio_num_t)LORA_CS);
@@ -279,7 +279,7 @@ void TaskLoRaSender(void *pvParameters) {
             gpio_hold_en((gpio_num_t)MOSI);
             digitalWrite(10, HIGH);
             gpio_hold_en((gpio_num_t)10);
-            */
+            
 
             // 開始淺眠
             DEBUG_PRINT("Going to Light Sleep...");
@@ -287,13 +287,13 @@ void TaskLoRaSender(void *pvParameters) {
             DEBUG_FLUSH();  //確保 Log 印完再睡
             esp_light_sleep_start();
 
-            /*
+            
             //解除鎖定輸出電位
             gpio_hold_dis((gpio_num_t)LORA_CS);
             gpio_hold_dis((gpio_num_t)LORA_SCK);
             gpio_hold_dis((gpio_num_t)LORA_MOSI);
             gpio_hold_dis((gpio_num_t)10);
-            */
+            
 
             ///*
             //Self-Test
