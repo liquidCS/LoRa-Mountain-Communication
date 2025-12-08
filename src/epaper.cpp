@@ -1,4 +1,5 @@
 #include "epaper.hpp"
+#include "icon.hpp"
 
 #define FREEMONO_FONT_HEIGHT 12
 
