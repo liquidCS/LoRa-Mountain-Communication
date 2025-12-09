@@ -27,7 +27,7 @@ uint16_t CreateNewDevice(const uint32_t UID)
 {
     for (uint16_t i = 0; i < DEVICE_LIST_MAX_SIZE; i++) {
         if (deviceList[i].GetStatus() == DEVICE_STATUS_UNKNOWN) { 
-            deviceList[i] = OtherDevice(UID);
+            deviceList[i] = OtherDevice(UID, DEVICE_STATUS_ACTIVE);
 
             DEBUG_PRINTF("Created new device with ID: %08X\n", UID);
             return i;

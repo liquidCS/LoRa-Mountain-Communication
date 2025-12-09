@@ -13,10 +13,10 @@ void drawIcon(IconType type, int x, int y, uint16_t color) {
 	const IconDef* icon = &iconTable[type];
 
 	// 1. 畫主圖
-	epaper.display.drawBitmap(x, y, icon->data, icon->width, icon->height, color);
+	epaper.display.drawBitmap(x-icon->width/2, y-icon->height/2, icon->data, icon->width, icon->height, color);
 
 	// 2. 處理疊加圖 (如果有的話)
 	if (icon->overlayData != NULL) {
-		epaper.display.drawBitmap(x, y, icon->overlayData, icon->width, icon->height, icon->overlayColor);
+		epaper.display.drawBitmap(x-icon->width/2, y-icon->height/2, icon->overlayData, icon->width, icon->height, icon->overlayColor);
 	}
 }

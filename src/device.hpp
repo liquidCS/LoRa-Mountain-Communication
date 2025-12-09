@@ -86,5 +86,6 @@ void UpdateDeviceLocation(const uint32_t UID, double lat, double lon, double att
 void UpdateDeviceID(const uint32_t UID, char* newID);
 
 extern MyDevice myDevice; // Info of this device 
+extern OtherDevice deviceList[DEVICE_LIST_MAX_SIZE]; // List of other devices
 
 #endif
