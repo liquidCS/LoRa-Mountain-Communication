@@ -103,7 +103,8 @@ void Epaper::_drawTopBar() {
 }
 
 void Epaper::_drawMap() {
-    display.fillRect(0, topbar_height, display.width(), display.height() - topbar_height, GxEPD_RED);
+    // display.fillRect(0, topbar_height, display.width(), display.height() - topbar_height, GxEPD_RED); // place holder
+    myMap.UpdateMap();
 }
 
 Epaper epaper;

@@ -8,6 +8,7 @@
 
 #include "gps.hpp"
 #include "device.hpp"
+#include "map.hpp"
 
 #if ENABLE_SLEEP
 extern SemaphoreHandle_t sleepLock;
