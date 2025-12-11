@@ -25,3 +25,9 @@
 - E-Paper
 
 ![testing_device_connetions](images/full_connection.png)
+
+## 📌 測試App
+- [**Android Companion App**](https://github.com/ccu412430024/LoRa-Mountain-Communication-Android)
+
+## 📌 License
+- [**LoRaMesher (MIT license)**](https://github.com/LoRaMesher/LoRaMesher)

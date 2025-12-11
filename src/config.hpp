@@ -26,6 +26,10 @@
 // === Sleep Configuration ===
 #define ENABLE_SLEEP 0
 
+// === BLE Configuration ===
+#define BLE_CONFIG_TIMEOUT 15000
+#define JSON_DOCUMENT_SIZE 128
+
 // === Check new device unknow ===
 #define CHECK_UNKNOW_DEVICE 1 
 
