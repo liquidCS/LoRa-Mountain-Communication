@@ -9,6 +9,7 @@
 #include "component_test/test_lora_transmit.cpp"
 #include "component_test/test_display.cpp"
 #include "component_test/test_epaper_icon.cpp"
+#include "component_test/test_buzzer.cpp"
 
 void setUp(void) {
   // set stuff up here
@@ -22,10 +23,11 @@ int runUnityTests(void) {
   UNITY_BEGIN();
   // RUN_TEST(test_rgbled_functionality);
   // RUN_TEST(test_epaper_functionality);
-  RUN_TEST(test_epaper_icon_functionality);
+  // RUN_TEST(test_epaper_icon_functionality);
   // RUN_TEST(test_gps_functionality);
   // RUN_TEST(test_lora_transmit_functionality);
   //RUN_TEST(test_lora_receive_functionality);
+  RUN_TEST(test_buzzer_functionality);
   return UNITY_END();
 }
 
