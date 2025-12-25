@@ -25,7 +25,11 @@ public:
 private:
     static const uint16_t FREEMONO_FONT_HEIGHT = 12;
     static const uint16_t topbar_height = 20;
+    #ifdef DEBUG 
+    static const uint16_t screen_update_delay = 15000; // ms
+    #else   
     static const uint16_t screen_update_delay = 60000; // ms
+    #endif
 
 
     void _initDisplay();
