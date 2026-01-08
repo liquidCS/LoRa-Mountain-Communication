@@ -8,7 +8,12 @@ Packet<uint8_t>* PacketService::createEmptyPacket(size_t packetSize) {
     }
 
     Packet<uint8_t>* p = static_cast<Packet<uint8_t>*>(pvPortMalloc(packetSize));
-
+    //  新增這段 (開始) 
+    if (p != nullptr) {
+        // 將記憶體全部歸零，解決 hop_count 亂跳的問題
+        memset(p, 0, packetSize); 
+    }
+    //  新增這段 (結束) 
     ESP_LOGI(LM_TAG, "Packet created with %d bytes", packetSize);
 
     return p;
@@ -149,6 +154,11 @@ DataPacket* PacketService::createDataPacket(uint16_t dst, uint16_t src, uint8_t 
     packet->src = src;
     packet->type = type;
     packet->packetSize = payloadSize + sizeof(DataPacket);
+
+    //  新增這兩行強制歸零 
+    packet->via = 0;       // 解決 Via 亂碼
+    packet->hop_count = 0; // 解決 Hops 亂碼
+    // 
 
     return packet;
 }

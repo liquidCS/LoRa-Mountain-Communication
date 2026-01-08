@@ -7,6 +7,8 @@
 class RouteDataPacket : public PacketHeader {
 public:
     uint16_t via = 0;
+    // [新增] 跳數計數器，預設為 0
+    uint8_t hop_count = 0;
 };
 #pragma pack()
 

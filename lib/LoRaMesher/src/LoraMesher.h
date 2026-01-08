@@ -23,6 +23,9 @@
 
 #include "services/SimulatorService.h"
 
+//Modified by User
+#include "config.hpp"
+
 /**
  * @brief LoRaMesher Library
  *
